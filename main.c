@@ -36,6 +36,28 @@
 #define TX_PORT D
 #define RX_PORT D
 
+// STEROWNIE KANA£ 0
+#define SW0_OFF 1		//detekcja obecnosci modulu sterujacego
+#define MPK0_OFF 0		//sterowanie przekaznikiem
+#define MTK0_OFF 0		//sterowanie triakiem
+#define SWA0_OFF 0		//detekcja obecnosci modulu pomiarowego
+#define DET0_OFF 1		//detekcja napiecia na wyjscu modulu pomiarowego
+#define RMS0_OFF 0		//sygnal pomiarowy True RMS dla pro¹du odbiornika
+
+#define SW0_PIN PD4
+#define MPK0_PIN PD5
+#define MTK0_PIN PD6
+#define SWA0_PIN PD7
+#define DET0_PIN PB0
+#define RMS0_PIN PC0
+
+#define SW0_PORT D
+#define MPK0_PORT D
+#define MTK0_PORT D
+#define SWA0_PORT D
+#define DET0_PORT B
+#define RMS0_PORT C
+
 int main(void)
 {
     
