@@ -1,0 +1,5 @@
+Debug/
+Release/
+*.cproj
+*.xml
+*.swp
