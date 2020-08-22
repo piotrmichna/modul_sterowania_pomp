@@ -84,9 +84,11 @@ void main_init(void);
 
 int main(void)
 {
-    
+    main_init();
+	
     while (1) 
     {
+		_delay_ms(150);
     }
 }
 
