@@ -12,10 +12,11 @@
 #include <avr/pgmspace.h>
 #include <stdlib.h>
 
+#include "macr.h"
 
 int main(void)
 {
-    /* Replace with your application code */
+    
     while (1) 
     {
     }
