@@ -59,7 +59,7 @@
 #define RMS1_PORT C
 
 void mod_init(void);
-
+void mod_set_nazwa(char * buf, uint8_t modx);
 
 
 

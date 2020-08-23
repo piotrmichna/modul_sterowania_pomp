@@ -24,6 +24,15 @@ typedef struct{
 
 TMOD mod[MOD_NUM];
 
+void mod_set_nazwa(char * buf, uint8_t modx){
+	char * c=&mod[modx].nazwa;
+	uint8_t n=0;
+	while(*buf!=0 && n<NAZWA_NUM){
+		*(c+n)=*buf;
+		n++;
+		buf++;
+	}
+}
 #ifdef MPK0_OFF
 void mpk0_set(uint8_t st);
 #endif
@@ -52,7 +61,7 @@ uint8_t swa1_get(void);
 #ifdef DET1_OFF
 uint8_t det1_get(void);
 #endif
-
+u
 
 void mod_init(void){
 #ifdef MPK0_OFF
