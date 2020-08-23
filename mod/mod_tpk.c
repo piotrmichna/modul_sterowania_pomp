@@ -7,6 +7,9 @@
 #include <stdlib.h>
 void mpk0_set(uint8_t st);
 void mtk0_set(uint8_t st);
+uint8_t sw0_get(void);
+uint8_t swa0_get(void);
+uint8_t det0_get(void);
 
 void mpk0_set(uint8_t st){
 	if (MPK0_OFF==1){
@@ -21,6 +24,30 @@ void mtk0_set(uint8_t st){
 	if(st) PORT( MTK0_PORT ) |= (1<<MTK0_PIN); else  PORT( MTK0_PORT ) &= ~(1<<MTK0_PIN);
 }
 
+uint8_t sw0_get(void){
+	uint8_t st;
+	st=( PIN(SW0_PORT) & (1<<SW0_PIN) );
+	if (SW0_OFF==1){
+		if(st) st=0; else st=1;
+	}
+	return st;
+}
+uint8_t swa0_get(void){
+	uint8_t st;
+	st=( PIN(SWA0_PORT) & (1<<SWA0_PIN) );
+	if (SWA0_OFF==1){
+		if(st) st=0; else st=1;
+	}
+	return st;
+}
+uint8_t det0_get(void){
+	uint8_t st;
+	st=( PIN(DET0_PORT) & (1<<DET0_PIN) );
+	if (DET0_OFF==1){
+		if(st) st=0; else st=1;
+	}
+	return st;
+}
 void mod_init(void){
 	
 	// INICJACJA KANALU 0
