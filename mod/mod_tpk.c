@@ -5,25 +5,39 @@
  */ 
 #include <avr/io.h>
 #include <stdlib.h>
-void mpk0_set(uint8_t st);
-void mtk0_set(uint8_t st);
-uint8_t sw0_get(void);
-uint8_t swa0_get(void);
-uint8_t det0_get(void);
 
+#ifdef MPK0_OFF
+void mpk0_set(uint8_t st);
+#endif
+#ifdef MTK0_OFF
+void mtk0_set(uint8_t st);
+#ifdef SW0_OFF
+uint8_t sw0_get(void);
+#endif
+#ifdef SWA0_OFF
+uint8_t swa0_get(void);
+#endif
+#ifdef DET0_OFF
+uint8_t det0_get(void);
+#endif
+
+#ifdef MPK0_OFF
 void mpk0_set(uint8_t st){
 	if (MPK0_OFF==1){
 		if(st) st=0; else st=1;
 	}
 	if(st) PORT( MPK0_PORT ) |= (1<<MPK0_PIN); else  PORT( MPK0_PORT ) &= ~(1<<MPK0_PIN);
 }
+#endif
+#ifdef MTK0_OFF
 void mtk0_set(uint8_t st){
 	if (MTK0_OFF==1){
 		if(st) st=0; else st=1;
 	}
 	if(st) PORT( MTK0_PORT ) |= (1<<MTK0_PIN); else  PORT( MTK0_PORT ) &= ~(1<<MTK0_PIN);
 }
-
+#endif
+#ifdef SW0_OFF
 uint8_t sw0_get(void){
 	uint8_t st;
 	st=( PIN(SW0_PORT) & (1<<SW0_PIN) );
@@ -32,6 +46,8 @@ uint8_t sw0_get(void){
 	}
 	return st;
 }
+#endif
+#ifdef SWA0_OFF
 uint8_t swa0_get(void){
 	uint8_t st;
 	st=( PIN(SWA0_PORT) & (1<<SWA0_PIN) );
@@ -40,6 +56,8 @@ uint8_t swa0_get(void){
 	}
 	return st;
 }
+#endif
+#ifdef DET0_OFF
 uint8_t det0_get(void){
 	uint8_t st;
 	st=( PIN(DET0_PORT) & (1<<DET0_PIN) );
@@ -48,6 +66,7 @@ uint8_t det0_get(void){
 	}
 	return st;
 }
+#endif
 void mod_init(void){
 	
 	// INICJACJA KANALU 0
