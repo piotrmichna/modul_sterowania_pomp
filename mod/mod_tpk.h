@@ -40,21 +40,21 @@
 #define SW1_OFF 1		//detekcja obecnosci modulu sterujacego
 #define MPK1_OFF 0		//sterowanie przekaznikiem
 #define MTK1_OFF 0		//sterowanie triakiem
-//#define SWA1_OFF 0		//detekcja obecnosci modulu pomiarowego
+#define SWA1_OFF 0		//detekcja obecnosci modulu pomiarowego
 #define DET1_OFF 1		//detekcja napiecia na wyjscu modulu pomiarowego
 #define RMS1_OFF 0		//sygnal pomiarowy True RMS dla pro¹du odbiornika
 
 #define SW1_PIN PB1
 #define MPK1_PIN PB2
 #define MTK1_PIN PC2
-//#define SWA1_PIN PD7
+#define SWA1_PIN PC5
 #define DET1_PIN PC3
 #define RMS1_PIN PC1
 
 #define SW1_PORT B
 #define MPK1_PORT B
-#define MTK1_PORT C
-//#define SWA1_PORT D
+#define MTK1_PORT CSS
+#define SWA1_PORT C
 #define DET1_PORT C
 #define RMS1_PORT C
 
