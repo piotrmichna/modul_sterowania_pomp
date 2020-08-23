@@ -24,8 +24,9 @@ typedef struct{
 
 TMOD mod[MOD_NUM];
 
-
 void mod_check(void);
+int mod_set_mpk(uint8_t modx, uint8_t st);
+int mod_set_mtk(uint8_t modx, uint8_t st);
 
 #ifdef MPK0_OFF
 void mpk0_set(uint8_t st);
@@ -65,6 +66,33 @@ void mod_set_nazwa(char * buf, uint8_t modx){
 		buf++;
 	}
 }
+int mod_set_mpk(uint8_t modx, uint8_t st){
+	if(mod[modx].mpk_f!=st){
+		if(mod[modx].mpk){
+			mod[modx].mpk(st);
+			mod[modx].mpk_f=st;
+			return st;
+		}else{
+			return F_BRAK_DEF;
+		}
+	}else{
+		return F_BRAK_DEF;
+	}
+}
+
+int mod_set_mtk(uint8_t modx, uint8_t st){
+	if(mod[modx].mtk_f!=st){
+		if(mod[modx].mtk){
+			mod[modx].mtk(st);
+			mod[modx].mtk_f=st;
+			return st;
+			}else{
+			return F_BRAK_DEF;
+		}
+		}else{
+		return F_BRAK_DEF;
+	}
+}
 
 void mod_check(void){
 	if(mod[0].sw){
@@ -80,6 +108,7 @@ void mod_check(void){
 		mod[1].swa_f=mod[1].swa();
 	}
 }
+
 void mod_init(void){
 #ifdef MPK0_OFF
 	mod[0].mpk=mpk0_set;
