@@ -6,6 +6,21 @@
 #include <avr/io.h>
 #include <stdlib.h>
 
+typedef struct{
+	void (*mpk)(uint8_t);
+	void (*mtk)(uint8_t);
+	uint8_t (*sw)(void);
+	uint8_t (*swa)(void);
+	uint8_t:1 mpk_f;
+	uint8_t:1 mtk_f;
+	uint8_t:1 sw_f;
+	uint8_t:1 swa_f;
+	uint8_t:4 adc_kanal;
+	uint16_t i;
+	uint16_t imin;
+	uint16_t imax;
+}TMOD;
+
 #ifdef MPK0_OFF
 void mpk0_set(uint8_t st);
 #endif
