@@ -63,6 +63,7 @@
 #define F_BRAK_MOD -1
 #define F_BRAK_ADC -2
 #define F_BRAK_NAPIECIA -3
+#define F_BRAK_DEF -4
 
 void mod_init(void);
 void mod_set_nazwa(char * buf, uint8_t modx);
