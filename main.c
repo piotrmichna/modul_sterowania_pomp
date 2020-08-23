@@ -85,10 +85,15 @@ void main_init(void);
 int main(void)
 {
     main_init();
-	
+	uint8_t n=0;
     while (1) 
     {
-		PORT( LED_PORT ) ^= (1<<LED_PIN);
+		if (!n){
+			PORT( MTK0_PORT ) ^= (1<<MTK0_PIN);
+			n=4;
+		}else{
+			n--;
+		}
 		_delay_ms(500);
     }
 }
