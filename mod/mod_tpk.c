@@ -3,9 +3,28 @@
  * Author : Piotr Michna
  * e-mail : pm@piotrmichna.pl
  */ 
+#include <avr/io.h>
+#include <stdlib.h>
+void mpk0_set(uint8_t st);
+void mtk0_set(uint8_t st);
+
+void mpk0_set(uint8_t st){
+	if (MPK0_OFF==1){
+		if(st) st=0; else st=1;
+	}
+	if(st) PORT( MPK0_PORT ) |= (1<<MPK0_PIN); else  PORT( MPK0_PORT ) &= ~(1<<MPK0_PIN);
+}
+void mtk0_set(uint8_t st){
+	if (MTK0_OFF==1){
+		if(st) st=0; else st=1;
+	}
+	if(st) PORT( MTK0_PORT ) |= (1<<MTK0_PIN); else  PORT( MTK0_PORT ) &= ~(1<<MTK0_PIN);
+}
 
 void mod_init(void){
+	
 	// INICJACJA KANALU 0
+	
 	#ifdef SW0_OFF
 		if(SW0_OFF==1) PORT( SW0_PORT ) |= (1<<SW0_PIN); else  PORT( SW0_PORT ) &= ~(1<<SW0_PIN);
 		DDR( SW0_PORT ) &= ~(1<<SW0_PIN);

@@ -10,6 +10,7 @@
 #ifndef MOD_TPK_H_
 #define MOD_TPK_H_
 
+#define MOD_NUM 2
 // STEROWNIE KANA£ 0
 #define SW0_OFF 1		//detekcja obecnosci modulu sterujacego
 #define MPK0_OFF 0		//sterowanie przekaznikiem
@@ -55,6 +56,7 @@
 #define RMS1_PORT C
 
 void mod_init(void);
+
 
 
 
