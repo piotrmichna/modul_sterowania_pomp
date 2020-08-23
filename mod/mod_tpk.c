@@ -33,6 +33,7 @@ void mod_set_nazwa(char * buf, uint8_t modx){
 		buf++;
 	}
 }
+
 #ifdef MPK0_OFF
 void mpk0_set(uint8_t st);
 #endif
@@ -61,7 +62,7 @@ uint8_t swa1_get(void);
 #ifdef DET1_OFF
 uint8_t det1_get(void);
 #endif
-u
+
 
 void mod_init(void){
 #ifdef MPK0_OFF

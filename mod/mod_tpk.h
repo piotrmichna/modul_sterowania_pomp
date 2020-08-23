@@ -58,6 +58,12 @@
 #define DET1_PORT C
 #define RMS1_PORT C
 
+// KODY ZWRACANE Z FUNKCJI
+#define F_OK 0
+#define F_BRAK_MOD -1
+#define F_BRAK_ADC -2
+#define F_BRAK_NAPIECIA -3
+
 void mod_init(void);
 void mod_set_nazwa(char * buf, uint8_t modx);
 
