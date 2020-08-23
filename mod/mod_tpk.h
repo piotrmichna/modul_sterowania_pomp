@@ -11,6 +11,7 @@
 #define MOD_TPK_H_
 
 #define MOD_NUM 2
+#define NAZWA_NUM 15
 // STEROWNIE KANA£ 0
 #define ADC0_KANAL 0		//nr kanalu ADC
 #define SW0_OFF 1		//detekcja obecnosci modulu sterujacego

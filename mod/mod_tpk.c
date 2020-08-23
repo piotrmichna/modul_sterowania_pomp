@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 typedef struct{
+	char nazwa[NAZWA_NUM];
 	void (*mpk)(uint8_t);
 	void (*mtk)(uint8_t);
 	uint8_t (*sw)(void);
