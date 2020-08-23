@@ -111,6 +111,9 @@ void mod_init(void){
 	mod[1].swa=0;
 	mod[1].swa_f=0;
 #endif
+
+mod[0].adc_kanal=ADC0_KANAL;
+mod[1].adc_kanal=ADC1_KANAL;
 	
 	// INICJACJA KANALU 0	
 	#ifdef SW0_OFF

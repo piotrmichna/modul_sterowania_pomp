@@ -12,6 +12,7 @@
 
 #define MOD_NUM 2
 // STEROWNIE KANA£ 0
+#define ADC0_KANAL 0		//nr kanalu ADC
 #define SW0_OFF 1		//detekcja obecnosci modulu sterujacego
 #define MPK0_OFF 0		//sterowanie przekaznikiem
 #define MTK0_OFF 0		//sterowanie triakiem
@@ -34,6 +35,7 @@
 #define RMS0_PORT C
 
 // STEROWANIE KANA£ 1
+#define ADC1_KANAL 1		//nr kanalu ADC
 #define SW1_OFF 1		//detekcja obecnosci modulu sterujacego
 #define MPK1_OFF 0		//sterowanie przekaznikiem
 #define MTK1_OFF 0		//sterowanie triakiem
