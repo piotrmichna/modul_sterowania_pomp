@@ -20,6 +20,20 @@ uint8_t swa0_get(void);
 #ifdef DET0_OFF
 uint8_t det0_get(void);
 #endif
+#ifdef MPK1_OFF
+void mpk1_set(uint8_t st);
+#endif
+#ifdef MTK1_OFF
+void mtk1_set(uint8_t st);
+#ifdef SW1_OFF
+uint8_t sw1_get(void);
+#endif
+#ifdef SWA1_OFF
+uint8_t swa1_get(void);
+#endif
+#ifdef DET1_OFF
+uint8_t det1_get(void);
+#endif
 
 #ifdef MPK0_OFF
 void mpk0_set(uint8_t st){
@@ -62,6 +76,53 @@ uint8_t det0_get(void){
 	uint8_t st;
 	st=( PIN(DET0_PORT) & (1<<DET0_PIN) );
 	if (DET0_OFF==1){
+		if(st) st=0; else st=1;
+	}
+	return st;
+}
+#endif
+
+#ifdef MPK1_OFF
+void mpk1_set(uint8_t st){
+	if (MPK1_OFF==1){
+		if(st) st=0; else st=1;
+	}
+	if(st) PORT( MPK1_PORT ) |= (1<<MPK1_PIN); else  PORT( MPK1_PORT ) &= ~(1<<MPK1_PIN);
+}
+#endif
+#ifdef MTK1_OFF
+void mtk1_set(uint8_t st){
+	if (MTK1_OFF==1){
+		if(st) st=0; else st=1;
+	}
+	if(st) PORT( MTK1_PORT ) |= (1<<MTK1_PIN); else  PORT( MTK1_PORT ) &= ~(1<<MTK1_PIN);
+}
+#endif
+#ifdef SW1_OFF
+uint8_t sw1_get(void){
+	uint8_t st;
+	st=( PIN(SW1_PORT) & (1<<SW1_PIN) );
+	if (SW1_OFF==1){
+		if(st) st=0; else st=1;
+	}
+	return st;
+}
+#endif
+#ifdef SWA1_OFF
+uint8_t swa1_get(void){
+	uint8_t st;
+	st=( PIN(SWA1_PORT) & (1<<SWA1_PIN) );
+	if (SWA1_OFF==1){
+		if(st) st=0; else st=1;
+	}
+	return st;
+}
+#endif
+#ifdef DET1_OFF
+uint8_t det1_get(void){
+	uint8_t st;
+	st=( PIN(DET1_PORT) & (1<<DET1_PIN) );
+	if (DET1_OFF==1){
 		if(st) st=0; else st=1;
 	}
 	return st;
