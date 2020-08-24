@@ -19,6 +19,21 @@ volatile char UART_TxBuf[UART_TX_BUF_SIZE];		// definicja bufora nadawczego
 volatile uint8_t UART_TxHead;					// indeks poczatkowy
 volatile uint8_t UART_TxTail;					// indeks koncowy
 
+#if RS485 == 1
+inline void rs485_odbieranie(void){
+	RS_TXEN_PORT &= ~(1<<RS_TXEN_PIN);
+	#ifdef RS_RXEN_PIN
+		RS_RXEN_PORT &= ~(1<<RS_RXEN_PIN);
+	#endif
+}
+inline void rs485_nadawanie(void){
+	RS_TXEN_PORT |= (1<<RS_TXEN_PIN);
+	#ifdef RS_RXEN_PIN
+		RS_RXEN_PORT |= (1<<RS_RXEN_PIN);
+	#endif
+}
+#endif
+
 void USART_Init( uint16_t baud ) {	
 	UBRR0H = (uint8_t)(baud>>8);
 	UBRR0L = (uint8_t)baud;						// ustawienie predkosci komunikacji	
