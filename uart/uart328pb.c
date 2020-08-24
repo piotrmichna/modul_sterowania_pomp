@@ -55,6 +55,20 @@ void uart_putint(int value, int radix){
 	uart_puts(string);				// zapis lancucha do bufora nadawczego
 }
 
+void uart_clear(void){
+	uart_puts("\x1b[");
+	uart_puts("m");
+
+	uart_puts("\x1b[");
+	uart_puts(";H");
+
+	uart_puts("\x1b[");
+	uart_puts("2J");
+
+	uart_puts("\x1b[");
+	uart_puts("?25l");
+}
+
 ISR( USART0_RX_vect ) {
 	uint8_t tmp_head;
 	char data;
