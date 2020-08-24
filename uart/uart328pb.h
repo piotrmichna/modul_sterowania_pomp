@@ -21,5 +21,7 @@
 void USART_Init( uint16_t baud );
 char uart_getc(void);
 void uart_putc( char data );
+void uart_puts(char *str);
+void uart_putint(int value, int radix);
 
 #endif /* UART328PB_H_ */

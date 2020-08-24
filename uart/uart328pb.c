@@ -44,6 +44,17 @@ void uart_putc( char data ) {
 	UCSR0B |= (1<<UDRIE0);								// wlaczenie przerwania od pustego bufora sprzetowego
 }
 
+void uart_puts(char *str){				// wysylanie lancucha
+	register char c;
+	while ((c = *str++)) uart_putc(c);	// zapis lancucha do bufora nadawczego
+}
+
+void uart_putint(int value, int radix){
+	char string[17];				// bufor lancucha
+	itoa(value, string, radix);		// konwersja liczby na znaki
+	uart_puts(string);				// zapis lancucha do bufora nadawczego
+}
+
 ISR( USART0_RX_vect ) {
 	uint8_t tmp_head;
 	char data;
