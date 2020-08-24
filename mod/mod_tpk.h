@@ -53,7 +53,7 @@
 
 #define SW1_PORT B
 #define MPK1_PORT B
-#define MTK1_PORT CSS
+#define MTK1_PORT C
 #define SWA1_PORT C
 #define DET1_PORT C
 #define RMS1_PORT C
