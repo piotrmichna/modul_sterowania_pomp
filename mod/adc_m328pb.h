@@ -22,7 +22,7 @@
 //#define ADC_PRESCALER 6		//64
 #define ADC_PRESCALER 7		//128
 
-adc_init(void);
-adc_get(uint8_t modx);
+void adc_init(void);
+int adc_get(uint8_t modx);
 
 #endif /* ADC_M328PB_H_ */

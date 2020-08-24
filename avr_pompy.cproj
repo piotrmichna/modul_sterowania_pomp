@@ -127,6 +127,12 @@
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="mod\adc_m328pb.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="mod\adc_m328pb.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="mod\mod_tpk.c">
       <SubType>compile</SubType>
     </Compile>
