@@ -44,6 +44,7 @@ void USART_Init( uint16_t baud ) {
 			RS_RXEN_DDR |= (1<<RS_RXEN_PIN);
 			RS_RXEN_PORT &= ~(1<<RS_RXEN_PIN);
 		#endif
+		rs485_odbieranie();
 		UCSR0B = (1<<RXEN0)|(1<<TXEN0);				// uruchomienie lini komunikacji
 		UCSR0B |= (1<<RXCIE0)|(1<<TXCIE0);			// zezwolenie na przerwanie od odbiornika i nadajnika
 		UCSR0C = (3<<UCSZ00);						// ramka 8bit 1bit stop
