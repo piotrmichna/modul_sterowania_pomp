@@ -9,8 +9,23 @@
 #ifndef UART328PB_H_
 #define UART328PB_H_
 
+#define RS485 1
+
 #define UART_BAUD 115200									// predkosc
 #define __UBRR ((F_CPU+UART_BAUD*8UL) / (16UL*UART_BAUD)-1) // UBRR dla U2X=0
+
+
+#if RS485 == 1
+	#define RS_TXEN_PIN PD2
+	#define RS_TXEN_PORT PORTD
+	#define RS_TXEN_DDR DDRD
+
+	//#define RS_RXEN_PIN PD3
+	#ifdef RS_RXEN_PIN
+		#define RS_RXEN_PORT PORTD
+		#define RS_RXEN_DDR DDRD
+	#endif
+#endif
 
 #define UART_RX_BUF_SIZE 16									// rozmiar bufora odbiorczego
 #define UART_RX_BUF_MASK ( UART_RX_BUF_SIZE - 1)			// maska bufora
