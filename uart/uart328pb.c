@@ -33,6 +33,17 @@ char uart_getc(void) {
 	return UART_RxBuf[UART_RxTail];						// zwrucenie bajta buforu odbiorczego
 }
 
+void uart_putc( char data ) {
+	uint8_t tmp_head;
+	tmp_head  = (UART_TxHead + 1) & UART_TX_BUF_MASK;	// przesuniecie indeksu
+	while ( tmp_head == UART_TxTail ){}					// oczekiwanie na zwolnienie miejsca w buforze
+
+	UART_TxBuf[tmp_head] = data;						// zapis znaku do bofora nadawczego
+	UART_TxHead = tmp_head;								// zapis indeksu
+
+	UCSR0B |= (1<<UDRIE0);								// wlaczenie przerwania od pustego bufora sprzetowego
+}
+
 ISR( USART0_RX_vect ) {
 	uint8_t tmp_head;
 	char data;
