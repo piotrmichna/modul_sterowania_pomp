@@ -22,9 +22,21 @@ volatile uint8_t UART_TxTail;					// indeks koncowy
 void USART_Init( uint16_t baud ) {	
 	UBRR0H = (uint8_t)(baud>>8);
 	UBRR0L = (uint8_t)baud;						// ustawienie predkosci komunikacji	
-	UCSR0B = (1<<RXEN0)|(1<<TXEN0);				// uruchomienie lini komunikacji
-	UCSR0B |= (1<<RXCIE0);						// zezwolenie na przerwanie od odbiornika
-	UCSR0C = (3<<UCSZ00);						// ramka 8bit 1bit stop
+	#if RS485 == 1
+		RS_TXEN_DDR |= (1<<RS_TXEN_PIN);
+		RS_TXEN_PORT &= ~(1<<RS_TXEN_PIN);
+		#ifdef RS_RXEN_PIN
+			RS_RXEN_DDR |= (1<<RS_RXEN_PIN);
+			RS_RXEN_PORT &= ~(1<<RS_RXEN_PIN);
+		#endif
+		UCSR0B = (1<<RXEN0)|(1<<TXEN0);				// uruchomienie lini komunikacji
+		UCSR0B |= (1<<RXCIE0)|(1<<TXCIE0);			// zezwolenie na przerwanie od odbiornika i nadajnika
+		UCSR0C = (3<<UCSZ00);						// ramka 8bit 1bit stop
+	#else
+		UCSR0B = (1<<RXEN0)|(1<<TXEN0);				// uruchomienie lini komunikacji
+		UCSR0B |= (1<<RXCIE0);						// zezwolenie na przerwanie od odbiornika
+		UCSR0C = (3<<UCSZ00);						// ramka 8bit 1bit stop
+	#endif
 }
 
 char uart_getc(void) {
