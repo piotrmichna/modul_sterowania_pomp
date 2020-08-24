@@ -18,3 +18,7 @@ void adc_init(void){
 	ADCSRA=(1<<ADEN) | (1<<ADIE);	//wlaczenie przetwornika i zezwolenie naprzerwanie
 	ADCSRA |= ADC_REFS;				//ustawienie preskalera
 }
+
+ISR(ADC_vect){
+
+}
