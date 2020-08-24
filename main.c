@@ -46,12 +46,7 @@ int main(void)
 	uint8_t n=0;
     while (1) 
     {
-		if (!n){
-			PORT( PWR_PORT ) ^= (1<<PWR_PIN);
-			n=4;
-		}else{
-			n--;
-		}
+		
 		_delay_ms(500);
     }
 }
