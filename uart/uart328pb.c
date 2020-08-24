@@ -27,6 +27,12 @@ void USART_Init( uint16_t baud ) {
 	UCSR0C = (3<<UCSZ00);						// ramka 8bit 1bit stop
 }
 
+char uart_getc(void) {
+	if ( UART_RxHead == UART_RxTail ) return 0;			// sprawdzenie zawartosci pufora odbiorczego
+	UART_RxTail = (UART_RxTail + 1) & UART_RX_BUF_MASK;	// przesuniecie indexu
+	return UART_RxBuf[UART_RxTail];						// zwrucenie bajta buforu odbiorczego
+}
+
 ISR( USART0_RX_vect ) {
 	uint8_t tmp_head;
 	char data;

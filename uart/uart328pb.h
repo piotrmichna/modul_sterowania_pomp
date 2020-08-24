@@ -19,5 +19,6 @@
 #define UART_TX_BUF_MASK ( UART_TX_BUF_SIZE - 1)			// maska bufora
 
 void USART_Init( uint16_t baud );
+char uart_getc(void);
 
 #endif /* UART328PB_H_ */
