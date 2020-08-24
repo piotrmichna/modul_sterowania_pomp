@@ -19,6 +19,15 @@ void adc_init(void){
 	ADCSRA |= ADC_REFS;				//ustawienie preskalera
 }
 
+int adc_get(uint8_t modx){
+	ADMUX=ADC_REFS | modx;
+	set_sleep_mode(SLEEP_MODE_ADC);    //Tryb noise canceller
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {sleep_enable();};     //Odblokuj mo¿liwoœæ wejœcia w tryb sleep
+	sleep_cpu();                       //WejdŸ w tryb uœpienia
+	sleep_disable();                   //Zablokuj mo¿liwoœæ wejœcia w tryb sleep
+	return ADC;
+}
+
 ISR(ADC_vect){
 
 }
