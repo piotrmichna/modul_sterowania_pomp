@@ -51,12 +51,15 @@ int main(void)
 	sei();
 	
 	uart_clear();
-	uart_puts("START");
+	uart_puts("START\n\r");	
+	uint8_t n=0;
 
     while (1) 
     {
-		
-		_delay_ms(500);
+		uart_putint(n, 10);
+		uart_puts("\n\r");
+		n++;
+		_delay_ms(999);
     }
 }
 
