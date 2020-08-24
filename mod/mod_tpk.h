@@ -12,6 +12,7 @@
 
 #define MOD_NUM 2
 #define NAZWA_NUM 15
+#define ADC_SAMPLE_NUM 4
 // STEROWNIE KANA£ 0
 #define ADC0_KANAL 0		//nr kanalu ADC
 #define SW0_OFF 1		//detekcja obecnosci modulu sterujacego
@@ -64,6 +65,26 @@
 #define F_BRAK_ADC -2
 #define F_BRAK_NAPIECIA -3
 #define F_BRAK_DEF -4
+
+typedef struct{
+	char nazwa[NAZWA_NUM];
+	void (*mpk)(uint8_t);
+	void (*mtk)(uint8_t);
+	uint8_t (*sw)(void);
+	uint8_t (*swa)(void);
+	uint8_t mpk_f :1;
+	uint8_t mtk_f :1;
+	uint8_t sw_f :1;
+	uint8_t swa_f :1;
+	uint8_t adc_kanal :4;
+	uint16_t buf[ADC_SAMPLE_NUM];
+	uint8_t id;
+	uint16_t i;
+	uint16_t imin;
+	uint16_t imax;
+}TMOD;
+
+TMOD mod[MOD_NUM];
 
 void mod_init(void);
 void mod_set_nazwa(char * buf, uint8_t modx);

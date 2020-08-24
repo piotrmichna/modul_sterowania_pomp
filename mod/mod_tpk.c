@@ -9,24 +9,7 @@
 #include "../macr.h"
 #include "mod_tpk.h"
 
-
-typedef struct{
-	char nazwa[NAZWA_NUM];
-	void (*mpk)(uint8_t);
-	void (*mtk)(uint8_t);
-	uint8_t (*sw)(void);
-	uint8_t (*swa)(void);
-	uint8_t mpk_f :1;
-	uint8_t mtk_f :1;
-	uint8_t sw_f :1;
-	uint8_t swa_f :1;
-	uint8_t adc_kanal :4;
-	uint16_t i;
-	uint16_t imin;
-	uint16_t imax;
-}TMOD;
-
-TMOD mod[MOD_NUM];
+extern TMOD mod[MOD_NUM];
 
 void mod_check(void);
 int mod_set_mpk(uint8_t modx, uint8_t st);
