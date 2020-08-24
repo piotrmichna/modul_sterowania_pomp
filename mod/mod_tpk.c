@@ -6,17 +6,21 @@
 #include <avr/io.h>
 #include <stdlib.h>
 
+#include "../macr.h"
+#include "mod_tpk.h"
+
+
 typedef struct{
 	char nazwa[NAZWA_NUM];
 	void (*mpk)(uint8_t);
 	void (*mtk)(uint8_t);
 	uint8_t (*sw)(void);
 	uint8_t (*swa)(void);
-	uint8_t:1 mpk_f;
-	uint8_t:1 mtk_f;
-	uint8_t:1 sw_f;
-	uint8_t:1 swa_f;
-	uint8_t:4 adc_kanal;
+	uint8_t mpk_f :1;
+	uint8_t mtk_f :1;
+	uint8_t sw_f :1;
+	uint8_t swa_f :1;
+	uint8_t adc_kanal :4;
 	uint16_t i;
 	uint16_t imin;
 	uint16_t imax;
@@ -33,6 +37,7 @@ void mpk0_set(uint8_t st);
 #endif
 #ifdef MTK0_OFF
 void mtk0_set(uint8_t st);
+#endif
 #ifdef SW0_OFF
 uint8_t sw0_get(void);
 #endif
@@ -47,6 +52,7 @@ void mpk1_set(uint8_t st);
 #endif
 #ifdef MTK1_OFF
 void mtk1_set(uint8_t st);
+#endif
 #ifdef SW1_OFF
 uint8_t sw1_get(void);
 #endif
@@ -58,7 +64,8 @@ uint8_t det1_get(void);
 #endif
 
 void mod_set_nazwa(char * buf, uint8_t modx){
-	char * c=&mod[modx].nazwa;
+	char * c;
+	c = mod[modx].nazwa;
 	uint8_t n=0;
 	while(*buf!=0 && n<NAZWA_NUM){
 		*(c+n)=*buf;

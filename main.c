@@ -13,25 +13,27 @@
 #include <stdlib.h>
 
 #include "macr.h"
+//#include "mod/mod_tpk.h"
+#include "uart/uart328pb.h"
 
 // SYSTEMOWE
 #define DET_INT_OFF 1	//detekcja przejscia przez zero napiêcia sieciowego
 #define PWR_OFF 0		//sterowanie zasilaczem dla peryferi
-#define LED_OFF 0		//dioda led pomocnicza
+//#define LED_OFF 0		//dioda led pomocnicza
 #define TXEN_OFF 1		//sterowanie kierunkiem komunikacji RS485
 #define TX_OFF 0		//sterowanie lini¹ TX
 #define RX_OFF 0		//sterowanie linia RX
 
 #define DET_INT_PIN PD3
 #define PWR_PIN PC4
-#define LED_PIN PC5
+//#define LED_PIN PC5
 #define TXEN_PIN PD2
 #define TX_PIN PD1
 #define RX_PIN PD0
 
 #define DET_INT_PORT D
 #define PWR_PORT C
-#define LED_PORT C
+//#define LED_PORT C
 #define TXEN_PORT D
 #define TX_PORT D
 #define RX_PORT D
@@ -42,16 +44,32 @@ void main_init(void);
 int main(void)
 {
     main_init();
-	uint8_t n=0;
+	//mod_init();
+	
+	USART_Init( __UBRR);
+
+	sei();
+	
+	uart_clear();
+	uart_puts("START\n\r");	
+	char c=0;
+	uint8_t n=0, cnt=100;
+
     while (1) 
     {
-		if (!n){
-			PORT( MTK0_PORT ) ^= (1<<MTK0_PIN);
-			n=4;
+		if (cnt){
+			cnt--;
 		}else{
-			n--;
+			uart_clear();
+			uart_putint(n,10);
+			n++;
+			cnt=100;
 		}
-		_delay_ms(500);
+		c=uart_getc();
+		if(c){
+			uart_putc(c);
+		}
+		_delay_ms(10);
     }
 }
 

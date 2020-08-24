@@ -133,9 +133,16 @@
     <Compile Include="mod\mod_tpk.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="uart\uart328pb.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="uart\uart328pb.h">
+      <SubType>compile</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="mod" />
+    <Folder Include="uart" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>
