@@ -43,7 +43,8 @@ void main_init(void);
 int main(void)
 {
     main_init();
-	uint8_t n=0;
+	mod_init();
+
     while (1) 
     {
 		
