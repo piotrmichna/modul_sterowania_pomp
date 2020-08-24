@@ -13,7 +13,8 @@
 #include <stdlib.h>
 
 #include "macr.h"
-#include "mod/mod_tpk.h"
+//#include "mod/mod_tpk.h"
+#include "uart/uart328pb.h"
 
 // SYSTEMOWE
 #define DET_INT_OFF 1	//detekcja przejscia przez zero napiêcia sieciowego
@@ -43,7 +44,14 @@ void main_init(void);
 int main(void)
 {
     main_init();
-	mod_init();
+	//mod_init();
+	
+	USART_Init( __UBRR);
+
+	sei();
+	
+	uart_clear();
+	uart_puts("START");
 
     while (1) 
     {
