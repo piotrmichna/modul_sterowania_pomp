@@ -7,7 +7,8 @@
  */ 
 
 #include <avr/io.h>
-#include <stdlib.h>
 #include <avr/interrupt.h>
+#include <util/atomic.h>
+#include <avr/sleep.h>
 
 #include "adc_m328pb.h"
