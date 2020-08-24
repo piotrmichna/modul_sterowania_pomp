@@ -53,9 +53,18 @@ int main(void)
 	uart_clear();
 	uart_puts("START\n\r");	
 	char c=0;
+	uint8_t n=0, cnt=100;
 
     while (1) 
     {
+		if (cnt){
+			cnt--;
+		}else{
+			uart_clear();
+			uart_putint(n,10);
+			n++;
+			cnt=100;
+		}
 		c=uart_getc();
 		if(c){
 			uart_putc(c);
