@@ -97,6 +97,12 @@ void uart_clear(void){
 	uart_puts("?25l");
 }
 
+#if RS485 == 1
+ISR( USART0_TX_vect ) {
+	rs485_odbieranie();	// ustaw tryb odbioru
+}
+#endif
+
 ISR( USART0_RX_vect ) {
 	uint8_t tmp_head;
 	char data;
@@ -110,9 +116,13 @@ ISR( USART0_RX_vect ) {
 		UART_RxBuf[tmp_head] = data; 	// zapis do bufora odbiorczego
 	}
 }
+
 ISR( USART0_UDRE_vect)  {
 	if ( UART_TxHead != UART_TxTail ) {						// sprawdzenei zawartosci buforu
 		UART_TxTail = (UART_TxTail + 1) & UART_TX_BUF_MASK; // przesuniecie indexu
+		#if RS485 == 1			
+			rs485_nadawanie();	// ustaw tryb nadawania
+		#endif
 		UDR0 = UART_TxBuf[UART_TxTail];						// zapis bajta do buforu sprzetowego
 	} else {
 		UCSR0B &= ~(1<<UDRIE0);								// zerowanie flagi pustego sprzetowego bufora nadawczego
