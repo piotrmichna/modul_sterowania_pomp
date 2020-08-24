@@ -52,14 +52,15 @@ int main(void)
 	
 	uart_clear();
 	uart_puts("START\n\r");	
-	uint8_t n=0;
+	char c=0;
 
     while (1) 
     {
-		uart_putint(n, 10);
-		uart_puts("\n\r");
-		n++;
-		_delay_ms(999);
+		c=uart_getc();
+		if(c){
+			uart_putc(c);
+		}
+		_delay_ms(10);
     }
 }
 
