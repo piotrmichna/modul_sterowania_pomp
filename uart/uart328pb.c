@@ -40,3 +40,11 @@ ISR( USART0_RX_vect ) {
 		UART_RxBuf[tmp_head] = data; 	// zapis do bufora odbiorczego
 	}
 }
+ISR( USART0_UDRE_vect)  {
+	if ( UART_TxHead != UART_TxTail ) {						// sprawdzenei zawartosci buforu
+		UART_TxTail = (UART_TxTail + 1) & UART_TX_BUF_MASK; // przesuniecie indexu
+		UDR0 = UART_TxBuf[UART_TxTail];						// zapis bajta do buforu sprzetowego
+	} else {
+		UCSR0B &= ~(1<<UDRIE0);								// zerowanie flagi pustego sprzetowego bufora nadawczego
+	}
+}
