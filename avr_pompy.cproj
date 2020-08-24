@@ -133,6 +133,9 @@
     <Compile Include="mod\mod_tpk.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="uart\uart328pb.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="uart\uart328pb.h">
       <SubType>compile</SubType>
     </Compile>
