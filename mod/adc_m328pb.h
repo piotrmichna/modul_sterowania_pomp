@@ -10,6 +10,7 @@
 #ifndef ADC_M328PB_H_
 #define ADC_M328PB_H_
 
+#define ADC_SLEEP_MODE 0
 //#define ADC_REFS 0		// AREF, zewnêtrzne napiecie odniesienia
 //#define ADC_REFS 64		// AVcc
 #define ADC_REFS 192	// Internal 1.1V
@@ -23,6 +24,11 @@
 #define ADC_PRESCALER 7		//128
 
 void adc_init(void);
-int adc_get(uint8_t modx);
+uint16_t adc_get(uint8_t modx);
+
+#if ADC_SLEEP_MODE == 0
+volatile uint16_t adc_res;
+volatile uint8_t adc_flag;
+#endif
 
 #endif /* ADC_M328PB_H_ */
