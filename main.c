@@ -13,7 +13,7 @@
 #include <stdlib.h>
 
 #include "macr.h"
-//#include "mod/mod_tpk.h"
+#include "mod/mod_tpk.h"
 #include "uart/uart328pb.h"
 #include "mod/adc_m328pb.h"
 
@@ -45,8 +45,11 @@ void main_init(void);
 int main(void)
 {
     main_init();
-	//mod_init();
+	mod_init();
 	adc_init();
+	if(mod[0].ena) mod[0].ena(1);
+	if(mod[0].mpk) mod[0].mpk(1);
+	if(mod[0].mtk) mod[0].mtk(0);
 	
 	USART_Init( __UBRR);
 
@@ -55,19 +58,23 @@ int main(void)
 	uart_clear();
 	uart_puts("START\n\r");	
 
-	uint8_t cnt=100;
-	int pomiar=0;
+	uint8_t cnt=25;
+	uint16_t pomiar=0;
 
 
     while (1) 
-    {
+    {	
+		if(adc_flag==1){
+			uart_clear();
+			uart_putint(adc_res,10);
+			adc_flag=0;
+		}
 		if (cnt){
 			cnt--;
 		}else{
-			pomiar=adc_get(0);
-			uart_clear();
-			uart_putint(pomiar,10);
-			cnt=100;
+			if(adc_flag==0)	pomiar=adc_get(0);	
+			pomiar++;		
+			cnt=25;
 		}
 		_delay_ms(10);
     }
