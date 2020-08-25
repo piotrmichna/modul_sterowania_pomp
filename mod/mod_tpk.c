@@ -24,8 +24,8 @@ void mtk0_set(uint8_t st);
 #ifdef SW0_OFF
 uint8_t sw0_get(void);
 #endif
-#ifdef SWA0_OFF
-uint8_t swa0_get(void);
+#ifdef ENA0_OFF
+void ena0_set(uint8_t st);
 #endif
 #ifdef DET0_OFF
 uint8_t det0_get(void);
@@ -39,8 +39,8 @@ void mtk1_set(uint8_t st);
 #ifdef SW1_OFF
 uint8_t sw1_get(void);
 #endif
-#ifdef SWA1_OFF
-uint8_t swa1_get(void);
+#ifdef ENA1_OFF
+void ena1_set(uint8_t st);
 #endif
 #ifdef DET1_OFF
 uint8_t det1_get(void);
@@ -84,18 +84,27 @@ int mod_set_mtk(uint8_t modx, uint8_t st){
 	}
 }
 
+int mod_set_ena(uint8_t modx, uint8_t st){
+	if(mod[modx].mtk_f!=st){
+		if(mod[modx].ena){
+			mod[modx].ena(st);
+			mod[modx].ena_f=st;
+			return st;
+			}else{
+			return F_BRAK_DEF;
+		}
+		}else{
+		return F_BRAK_DEF;
+	}
+}
+
+
 void mod_check(void){
 	if(mod[0].sw){
 		mod[0].sw_f=mod[0].sw();
 	}
-	if(mod[0].swa){
-		mod[0].swa_f=mod[0].swa();
-	}
 	if(mod[1].sw){
 		mod[1].sw_f=mod[1].sw();
-	}
-	if(mod[1].swa){
-		mod[1].swa_f=mod[1].swa();
 	}
 }
 
@@ -121,12 +130,12 @@ void mod_init(void){
 	mod[0].sw=0;
 	mod[0].sw_f=0;
 #endif
-#ifdef SWA0_OFF
-	mod[0].swa=swa0_get;
-	mod[0].swa_f=SWA0_OFF;
+#ifdef ENA0_OFF
+	mod[0].ena=ena0_set;
+	mod[0].ena_f=ENA0_OFF;
 #else
-	mod[0].swa=0;
-	mod[0].swa_f=0;
+	mod[0].ena=0;
+	mod[0].ena_f=0;
 #endif
 
 #ifdef MPK1_OFF
@@ -150,12 +159,12 @@ void mod_init(void){
 	mod[1].sw=0;
 	mod[1].sw_f=0;
 #endif
-#ifdef SWA1_OFF
-	mod[1].swa=swa1_get;
-	mod[1].swa_f=SWA1_OFF;
+#ifdef ENA1_OFF
+	mod[1].ena=ena1_set;
+	mod[1].ena_f=ENA1_OFF;
 #else
-	mod[1].swa=0;
-	mod[1].swa_f=0;
+	mod[1].ena=0;
+	mod[1].ena_f=0;
 #endif
 
 mod[0].adc_kanal=ADC0_KANAL;
@@ -174,9 +183,9 @@ mod[1].adc_kanal=ADC1_KANAL;
 		if(MTK0_OFF==1) PORT( MTK0_PORT ) |= (1<<MTK0_PIN); else  PORT( MTK0_PORT ) &= ~(1<<MTK0_PIN);
 		DDR( MTK0_PORT ) |= (1<<MTK0_PIN);
 	#endif
-	#ifdef SWA0_OFF
-		if(SWA0_OFF==1) PORT( SWA0_PORT ) |= (1<<SWA0_PIN); else  PORT( SWA0_PORT ) &= ~(1<<SWA0_PIN);
-		DDR( SWA0_PORT ) &= ~(1<<SWA0_PIN);
+	#ifdef ENA0_OFF
+		if(ENA0_OFF==1) PORT( ENA0_PORT ) |= (1<<ENA0_PIN); else  PORT( ENA0_PORT ) &= ~(1<<ENA0_PIN);
+		DDR( ENA0_PORT ) &= ~(1<<ENA0_PIN);
 	#endif
 	#ifdef DET0_OFF
 		if(DET0_OFF==1) PORT( DET0_PORT ) |= (1<<DET0_PIN); else PORT( DET0_PORT ) &= ~(1<<DET0_PIN);
@@ -199,9 +208,9 @@ mod[1].adc_kanal=ADC1_KANAL;
 		if(MTK1_OFF==1) PORT( MTK1_PORT ) |= (1<<MTK1_PIN); else  PORT( MTK1_PORT ) &= ~(1<<MTK1_PIN);
 		DDR( MTK1_PORT ) |= (1<<MTK1_PIN);
 	#endif
-	#ifdef SWA1_OFF
-		if(SWA1_OFF==1) PORT( SWA1_PORT ) |= (1<<SWA1_PIN); else  PORT( SWA1_PORT ) &= ~(1<<SWA1_PIN);
-		DDR( SWA1_PORT ) &= ~(1<<SWA1_PIN);
+	#ifdef ENA1_OFF
+		if(ENA1_OFF==1) PORT( ENA1_PORT ) |= (1<<ENA1_PIN); else  PORT( ENA1_PORT ) &= ~(1<<ENA1_PIN);
+		DDR( ENA1_PORT ) &= ~(1<<ENA1_PIN);
 	#endif
 	#ifdef DET1_OFF
 		if(DET1_OFF==1) PORT( DET1_PORT ) |= (1<<DET1_PIN); else PORT( DET1_PORT ) &= ~(1<<DET1_PIN);
@@ -239,14 +248,12 @@ uint8_t sw0_get(void){
 	return st;
 }
 #endif
-#ifdef SWA0_OFF
-uint8_t swa0_get(void){
-	uint8_t st;
-	st=( PIN(SWA0_PORT) & (1<<SWA0_PIN) );
-	if (SWA0_OFF==1){
+#ifdef ENA0_OFF
+void ena0_set(uint8_t st){
+	if (ENA0_OFF==1){
 		if(st) st=0; else st=1;
 	}
-	return st;
+	if(st) PORT( ENA0_PORT ) |= (1<<ENA0_PIN); else  PORT( ENA0_PORT ) &= ~(1<<ENA0_PIN);
 }
 #endif
 #ifdef DET0_OFF
@@ -286,14 +293,12 @@ uint8_t sw1_get(void){
 	return st;
 }
 #endif
-#ifdef SWA1_OFF
-uint8_t swa1_get(void){
-	uint8_t st;
-	st=( PIN(SWA1_PORT) & (1<<SWA1_PIN) );
-	if (SWA1_OFF==1){
+#ifdef ENA1_OFF
+void ena1_set(uint8_t st){
+	if (ENA1_OFF==1){
 		if(st) st=0; else st=1;
 	}
-	return st;
+	if(st) PORT( ENA1_PORT ) |= (1<<ENA1_PIN); else  PORT( ENA1_PORT ) &= ~(1<<ENA1_PIN);
 }
 #endif
 #ifdef DET1_OFF
