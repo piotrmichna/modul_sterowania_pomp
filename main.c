@@ -15,6 +15,7 @@
 #include "macr.h"
 //#include "mod/mod_tpk.h"
 #include "uart/uart328pb.h"
+#include "mod/adc_m328pb.h"
 
 // SYSTEMOWE
 #define DET_INT_OFF 1	//detekcja przejscia przez zero napiêcia sieciowego
@@ -45,6 +46,7 @@ int main(void)
 {
     main_init();
 	//mod_init();
+	adc_init();
 	
 	USART_Init( __UBRR);
 
@@ -52,22 +54,20 @@ int main(void)
 	
 	uart_clear();
 	uart_puts("START\n\r");	
-	char c=0;
-	uint8_t n=0, cnt=100;
+
+	uint8_t cnt=100;
+	int pomiar=0;
+
 
     while (1) 
     {
 		if (cnt){
 			cnt--;
 		}else{
+			pomiar=adc_get(0);
 			uart_clear();
-			uart_putint(n,10);
-			n++;
+			uart_putint(pomiar,10);
 			cnt=100;
-		}
-		c=uart_getc();
-		if(c){
-			uart_putc(c);
 		}
 		_delay_ms(10);
     }
