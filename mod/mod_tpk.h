@@ -78,11 +78,14 @@ typedef struct{
 	uint8_t sw_f :1;
 	uint8_t ena_f :1;
 	uint8_t adc_kanal :4;
-	int buf[ADC_SAMPLE_NUM];
-	uint8_t id;
-	int i;
-	int imin;
-	int imax;
+	uint16_t buf[ADC_SAMPLE_NUM];
+	uint16_t adc_val;
+	uint8_t adc_flag :1;
+	uint8_t buf_id :0;
+	uint8_t buf_num;
+	uint16_t i;
+	uint16_t imin;
+	uint16_t imax;
 }TMOD;
 
 TMOD mod[MOD_NUM];
