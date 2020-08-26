@@ -170,6 +170,15 @@ void mod_init(void){
 
 mod[0].adc_kanal=ADC0_KANAL;
 mod[1].adc_kanal=ADC1_KANAL;
+
+	#ifdef DET_INT_OFF
+		if(DET_INT_OFF==1) PORT( DET_INT_PORT ) |= (1<<DET_INT_PIN); else PORT( DET_INT_PORT ) |= (1<<DET_INT_PIN);
+		DDR( DET_INT_PORT ) &= ~(1<<DET_INT_PIN);
+	#endif
+	#ifdef PWR_OFF
+		if(PWR_OFF==1) PORT( PWR_PORT ) |= (1<<PWR_PIN); else PORT( PWR_PORT ) &= ~(1<<PWR_PIN);
+		DDR( PWR_PORT ) |= (1<<PWR_PIN);
+	#endif
 	
 	// INICJACJA KANALU 0	
 	#ifdef SW0_OFF

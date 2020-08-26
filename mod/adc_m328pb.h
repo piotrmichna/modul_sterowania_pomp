@@ -23,6 +23,15 @@
 //#define ADC_PRESCALER 6		//64
 #define ADC_PRESCALER 7		//128
 
+#define DET_INT_OFF 1	//detekcja przejscia przez zero napiêcia sieciowego
+#define PWR_OFF 0		//sterowanie zasilaczem dla peryferi
+
+#define DET_INT_PIN PD3
+#define PWR_PIN PC4
+
+#define DET_INT_PORT D
+#define PWR_PORT C
+
 void adc_init(void);
 uint16_t adc_get(uint8_t modx);
 void adc_stop(void);

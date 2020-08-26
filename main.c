@@ -18,22 +18,17 @@
 #include "mod/adc_m328pb.h"
 
 // SYSTEMOWE
-#define DET_INT_OFF 1	//detekcja przejscia przez zero napiêcia sieciowego
-#define PWR_OFF 0		//sterowanie zasilaczem dla peryferi
+
 //#define LED_OFF 0		//dioda led pomocnicza
 #define TXEN_OFF 1		//sterowanie kierunkiem komunikacji RS485
 #define TX_OFF 0		//sterowanie lini¹ TX
 #define RX_OFF 0		//sterowanie linia RX
 
-#define DET_INT_PIN PD3
-#define PWR_PIN PC4
 //#define LED_PIN PC5
 #define TXEN_PIN PD2
 #define TX_PIN PD1
 #define RX_PIN PD0
 
-#define DET_INT_PORT D
-#define PWR_PORT C
 //#define LED_PORT C
 #define TXEN_PORT D
 #define TX_PORT D
@@ -106,14 +101,6 @@ int main(void)
 
 void main_init(void){
 	// INICJACJA SYSTEMOWE
-	#ifdef DET_INT_OFF
-		if(DET_INT_OFF==1) PORT( DET_INT_PORT ) |= (1<<DET_INT_PIN); else PORT( DET_INT_PORT ) |= (1<<DET_INT_PIN);
-		DDR( DET_INT_PORT ) &= ~(1<<DET_INT_PIN);
-	#endif
-	#ifdef PWR_OFF
-		if(PWR_OFF==1) PORT( PWR_PORT ) |= (1<<PWR_PIN); else PORT( PWR_PORT ) &= ~(1<<PWR_PIN);
-		DDR( PWR_PORT ) |= (1<<PWR_PIN);
-	#endif
 	#ifdef LED_OFF
 		if(LED_OFF==1) PORT( LED_PORT ) |= (1<<LED_PIN); else PORT( LED_PORT ) &= ~(1<<LED_PIN);
 		DDR( LED_PORT ) |= (1<<LED_PIN);
