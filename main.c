@@ -13,38 +13,39 @@
 #include <stdlib.h>
 
 #include "macr.h"
-//#include "mod/mod_tpk.h"
+#include "mod/mod_tpk.h"
 #include "uart/uart328pb.h"
+#include "mod/adc_m328pb.h"
 
 // SYSTEMOWE
-#define DET_INT_OFF 1	//detekcja przejscia przez zero napiêcia sieciowego
-#define PWR_OFF 0		//sterowanie zasilaczem dla peryferi
+
 //#define LED_OFF 0		//dioda led pomocnicza
 #define TXEN_OFF 1		//sterowanie kierunkiem komunikacji RS485
 #define TX_OFF 0		//sterowanie lini¹ TX
 #define RX_OFF 0		//sterowanie linia RX
 
-#define DET_INT_PIN PD3
-#define PWR_PIN PC4
 //#define LED_PIN PC5
 #define TXEN_PIN PD2
 #define TX_PIN PD1
 #define RX_PIN PD0
 
-#define DET_INT_PORT D
-#define PWR_PORT C
 //#define LED_PORT C
 #define TXEN_PORT D
 #define TX_PORT D
 #define RX_PORT D
 
+char testAr[]={"|/-\\|/-\\"};
 
 void main_init(void);
 
 int main(void)
 {
     main_init();
-	//mod_init();
+	mod_init();
+	adc_init();
+	if(mod[0].ena) mod[0].ena(1);
+	if(mod[0].mpk) mod[0].mpk(1);
+	if(mod[0].mtk) mod[0].mtk(0);
 	
 	USART_Init( __UBRR);
 
@@ -52,22 +53,47 @@ int main(void)
 	
 	uart_clear();
 	uart_puts("START\n\r");	
-	char c=0;
-	uint8_t n=0, cnt=100;
+
+	uint8_t cnt=25,n=0;
+	uint16_t pomiar=0;
+	char c;
+	
+
 
     while (1) 
-    {
+    {	
+		#if ADC_SLEEP_MODE == 0
+			if(adc_flag==1){
+				uart_clear();
+				c=testAr[n];
+				uart_putc(' ');
+				uart_putc(c);
+				uart_putc(' ');
+				uart_putint(adc_res,10);
+				n++;
+				if(n==8) n=0;
+				adc_flag=0;
+			}
+		#endif
 		if (cnt){
 			cnt--;
 		}else{
-			uart_clear();
-			uart_putint(n,10);
-			n++;
-			cnt=100;
-		}
-		c=uart_getc();
-		if(c){
-			uart_putc(c);
+			#if ADC_SLEEP_MODE == 0
+				if(adc_flag==0)	pomiar=adc_get(0);
+				pomiar++;
+			#else
+				pomiar=adc_get(0);
+				uart_clear();
+				c=testAr[n];
+				uart_putc(' ');
+				uart_putc(c);
+				uart_putc(' ');
+				uart_putint(pomiar,10);
+				n++;
+				if(n==8) n=0;
+			#endif
+			
+			cnt=25;
 		}
 		_delay_ms(10);
     }
@@ -75,14 +101,6 @@ int main(void)
 
 void main_init(void){
 	// INICJACJA SYSTEMOWE
-	#ifdef DET_INT_OFF
-		if(DET_INT_OFF==1) PORT( DET_INT_PORT ) |= (1<<DET_INT_PIN); else PORT( DET_INT_PORT ) |= (1<<DET_INT_PIN);
-		DDR( DET_INT_PORT ) &= ~(1<<DET_INT_PIN);
-	#endif
-	#ifdef PWR_OFF
-		if(PWR_OFF==1) PORT( PWR_PORT ) |= (1<<PWR_PIN); else PORT( PWR_PORT ) &= ~(1<<PWR_PIN);
-		DDR( PWR_PORT ) |= (1<<PWR_PIN);
-	#endif
 	#ifdef LED_OFF
 		if(LED_OFF==1) PORT( LED_PORT ) |= (1<<LED_PIN); else PORT( LED_PORT ) &= ~(1<<LED_PIN);
 		DDR( LED_PORT ) |= (1<<LED_PIN);
