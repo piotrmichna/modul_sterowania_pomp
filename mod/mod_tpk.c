@@ -8,6 +8,7 @@
 
 #include "../macr.h"
 #include "mod_tpk.h"
+#include "adc_m328pb.h"
 
 extern TMOD mod[MOD_NUM];
 

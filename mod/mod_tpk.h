@@ -12,7 +12,8 @@
 
 #define MOD_NUM 2
 #define NAZWA_NUM 15
-#define ADC_SAMPLE_NUM 4
+#define ADC_SAMPLE_NUM 5	// ilosc prubek do usrednienia max 63
+
 // STEROWNIE KANA£ 0
 #define ADC0_KANAL 0		//nr kanalu ADC
 #define SW0_OFF 1		//detekcja obecnosci modulu sterujacego
