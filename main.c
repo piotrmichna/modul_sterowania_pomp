@@ -39,6 +39,7 @@
 #define TX_PORT D
 #define RX_PORT D
 
+char testAr[]={"|/-\\|/-\\"};
 
 void main_init(void);
 
@@ -58,22 +59,45 @@ int main(void)
 	uart_clear();
 	uart_puts("START\n\r");	
 
-	uint8_t cnt=25;
+	uint8_t cnt=25,n=0;
 	uint16_t pomiar=0;
+	char c;
+	
 
 
     while (1) 
     {	
-		if(adc_flag==1){
-			uart_clear();
-			uart_putint(adc_res,10);
-			adc_flag=0;
-		}
+		#if ADC_SLEEP_MODE == 0
+			if(adc_flag==1){
+				uart_clear();
+				c=testAr[n];
+				uart_putc(' ');
+				uart_putc(c);
+				uart_putc(' ');
+				uart_putint(adc_res,10);
+				n++;
+				if(n==8) n=0;
+				adc_flag=0;
+			}
+		#endif
 		if (cnt){
 			cnt--;
 		}else{
-			if(adc_flag==0)	pomiar=adc_get(0);	
-			pomiar++;		
+			#if ADC_SLEEP_MODE == 0
+				if(adc_flag==0)	pomiar=adc_get(0);
+				pomiar++;
+			#else
+				pomiar=adc_get(0);
+				uart_clear();
+				c=testAr[n];
+				uart_putc(' ');
+				uart_putc(c);
+				uart_putc(' ');
+				uart_putint(pomiar,10);
+				n++;
+				if(n==8) n=0;
+			#endif
+			
 			cnt=25;
 		}
 		_delay_ms(10);
