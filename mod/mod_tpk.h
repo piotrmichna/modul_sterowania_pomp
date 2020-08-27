@@ -12,7 +12,7 @@
 
 #define MOD_NUM 2
 #define NAZWA_NUM 15
-#define ADC_SAMPLE_NUM 5	// ilosc prubek do usrednienia max 63
+#define ADC_SAMPLE_NUM 5	// ilosc prubek do usrednienia max 31
 
 // STEROWNIE KANA£ 0
 #define ADC0_KANAL 0		//nr kanalu ADC
@@ -80,7 +80,9 @@ typedef struct{
 	uint8_t adc_kanal :4;
 	uint16_t buf[ADC_SAMPLE_NUM];
 	uint16_t adc_val;
-	uint8_t adc_flag :1;
+	uint8_t det_f :1;
+	uint8_t start_f :1;
+	uint8_t stop_f :1;
 	uint8_t buf_id :0;
 	uint8_t buf_num;
 	uint16_t i;
@@ -90,7 +92,7 @@ typedef struct{
 
 TMOD mod[MOD_NUM];
 
-void mod_init(void);
+void mod_event(void);
 void mod_set_nazwa(char * buf, uint8_t modx);
 
 

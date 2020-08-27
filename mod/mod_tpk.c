@@ -15,6 +15,7 @@ extern TMOD mod[MOD_NUM];
 void mod_check(void);
 int mod_set_mpk(uint8_t modx, uint8_t st);
 int mod_set_mtk(uint8_t modx, uint8_t st);
+void mod_init(void);
 
 #ifdef MPK0_OFF
 void mpk0_set(uint8_t st);
@@ -46,6 +47,58 @@ void ena1_set(uint8_t st);
 #ifdef DET1_OFF
 uint8_t det1_get(void);
 #endif
+void mod_get_adc(uint8_t md){
+	if(mod[md].buf_num==0){				// jesli pierwszy pomiar wlacz przetwornik True RMS
+		if(mod[md].ena) mod[md].ena(1);
+	}
+	
+	#if ADC_SLEEP_MODE == 0
+		// wylacz inne przerwania
+		mod[md].buf[ mod[md].buf_id ]=adc_get(md);	//wykonaj pomiar ADC dla przetwornika True RMS
+		while(!adc_flag){		// oczekiwanie na zakonczenie konwersji
+			asm volatile ("nop");
+		}
+	#else
+		mod[md].buf[ mod[md].buf_id ]=adc_get(md);	//wykonaj pomiar ADC dla przetwornika True RMS
+	#endif
+	
+	// obliczenia
+	uint8_t n=mod[md].buf_id+1;
+	if(mod[md].buf_num<n) mod[md].buf_num=n;
+	
+	mod[md].adc_val=0;
+	for(n=0;n<mod[md].buf_num;n++){
+		mod[md].adc_val+=mod[md].buf[n];	
+	}
+	mod[md].i=mod[md].adc_val/mod[md].buf_num;
+	if(mod[md].buf_num==ADC_SAMPLE_NUM){		// zapis skrajnych wartosci
+		if(mod[md].i>mod[md].imax) mod[md].imax=mod[md].i;
+		if(mod[md].i<mod[md].imin) mod[md].imin=mod[md].i;
+	}
+	mod[md].buf_id++;
+	if(mod[md].buf_id==ADC_SAMPLE_NUM) mod[md].buf_id=0;
+}
+void mod_stop_adc(uint8_t md){
+	adc_stop();
+	mod[md].buf_id=0;
+	mod[md].buf_num=0;
+	if(mod[md].ena) mod[md].ena(0);
+}
+void mod_event(void){
+	static uint8_t init_f;
+	if(!init_f) {
+		mod_check();
+		mod_init();
+		init_f=1;
+	}
+	for(uint8_t n=0; n<MOD_NUM; n++){
+		if(mod[n].sw_f){
+			if(mod[n].mpk_f){
+				mod[n].i=adc_get();	
+			}
+		}
+	}	
+}
 
 void mod_set_nazwa(char * buf, uint8_t modx){
 	char * c;
