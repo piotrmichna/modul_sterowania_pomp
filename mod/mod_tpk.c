@@ -380,7 +380,38 @@ mod[1].nazwa[6]='\0';
 		if(RMS1_OFF==1) PORT( RMS1_PORT ) |= (1<<RMS1_PIN); else PORT( RMS1_PORT ) &= ~(1<<RMS1_PIN);
 		DDR( RMS1_PORT ) &= ~(1<<RMS1_PIN);
 	#endif
+	mcnf.init_f=1;
 }
+
+#ifdef PWR_OFF
+int8_t pwr_on(void){	
+	static uint8_t cnt;
+	if(!mcnf.pwr_f){
+		if(!cnt){
+			if (PWR_OFF==1) PORT( PWR_PORT ) &= ~(1<<PWR_PIN); else PORT( PWR_PORT ) |= (1<<PWR_PIN);
+			cnt++;
+			return 1;
+		}else{
+			if(cnt<mcnf.pwr_delay-1){
+				cnt++;
+				return 1;
+			}else{
+				cnt=0;
+				mcnf.pwr_f=1;
+				return 0;
+			}
+		}
+	}else{
+		return 0;
+	}
+}
+void pwr_off(void){
+	if(mcnf.pwr_f){
+		if (PWR_OFF==1) PORT( PWR_PORT ) &= ~(1<<PWR_PIN); else PORT( PWR_PORT ) |= (1<<PWR_PIN);
+		mcnf.pwr_f=0;
+	}
+}
+#endif
 
 #ifdef MPK0_OFF
 void mpk0_set(uint8_t st){
