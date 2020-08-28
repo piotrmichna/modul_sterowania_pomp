@@ -5,17 +5,21 @@
  */ 
 #include <avr/io.h>
 #include <stdlib.h>
+#include <util/atomic.h>
+#include <avr/interrupt.h>
 
 #include "../macr.h"
 #include "mod_tpk.h"
 #include "adc_m328pb.h"
 
 extern TMOD mod[MOD_NUM];
+extern volatile uint8_t det_cnt;
+uint8_t enum tryb {tryb_off, tryb_start, tryb_det, tryb_mtr, tryb_mpk, tryb_run};
 
 void mod_check(void);
 int mod_set_mpk(uint8_t modx, uint8_t st);
 int mod_set_mtk(uint8_t modx, uint8_t st);
-void mod_init(void);
+
 
 #ifdef MPK0_OFF
 void mpk0_set(uint8_t st);
@@ -47,6 +51,20 @@ void ena1_set(uint8_t st);
 #ifdef DET1_OFF
 uint8_t det1_get(void);
 #endif
+void mod_det0_init(void){	
+	EIMSK |= (1<<INT1);
+	EICRA |= (1<<ISC11);	
+}
+void mod_det0_stop(void){
+	EIMSK &= ~(1<<INT1);
+	EICRA &= ~(1<<ISC11);
+	det_cnt=0;
+}
+
+ISR(INT1_vect){
+	if(!det_cnt) OCR1A= 1800;
+	if(det_cnt<10) det_cnt++;
+}
 void mod_get_adc(uint8_t md){
 	if(mod[md].buf_num==0){				// jesli pierwszy pomiar wlacz przetwornik True RMS
 		if(mod[md].ena) mod[md].ena(1);
@@ -55,9 +73,9 @@ void mod_get_adc(uint8_t md){
 	#if ADC_SLEEP_MODE == 0
 		// wylacz inne przerwania
 		mod[md].buf[ mod[md].buf_id ]=adc_get(md);	//wykonaj pomiar ADC dla przetwornika True RMS
-		while(!adc_flag){		// oczekiwanie na zakonczenie konwersji
-			asm volatile ("nop");
-		}
+		
+		while(!adc_flag) asm volatile ("nop");	// oczekiwanie na zakonczenie konwersji
+		adc_flag=0;
 	#else
 		mod[md].buf[ mod[md].buf_id ]=adc_get(md);	//wykonaj pomiar ADC dla przetwornika True RMS
 	#endif
@@ -65,39 +83,69 @@ void mod_get_adc(uint8_t md){
 	// obliczenia
 	uint8_t n=mod[md].buf_id+1;
 	if(mod[md].buf_num<n) mod[md].buf_num=n;
-	
-	mod[md].adc_val=0;
-	for(n=0;n<mod[md].buf_num;n++){
-		mod[md].adc_val+=mod[md].buf[n];	
-	}
-	mod[md].i=mod[md].adc_val/mod[md].buf_num;
-	if(mod[md].buf_num==ADC_SAMPLE_NUM){		// zapis skrajnych wartosci
-		if(mod[md].i>mod[md].imax) mod[md].imax=mod[md].i;
-		if(mod[md].i<mod[md].imin) mod[md].imin=mod[md].i;
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+		mod[md].adc_val=0;
+		for(n=0;n<mod[md].buf_num;n++){
+			mod[md].adc_val+=mod[md].buf[n];	
+		}
+		mod[md].i=mod[md].adc_val/mod[md].buf_num;
+		if(mod[md].buf_num==ADC_SAMPLE_NUM){		// zapis skrajnych wartosci
+			if(mod[md].i>mod[md].imax) mod[md].imax=mod[md].i;
+			if(mod[md].i<mod[md].imin) mod[md].imin=mod[md].i;
+		}
 	}
 	mod[md].buf_id++;
 	if(mod[md].buf_id==ADC_SAMPLE_NUM) mod[md].buf_id=0;
 }
+
 void mod_stop_adc(uint8_t md){
 	adc_stop();
 	mod[md].buf_id=0;
 	mod[md].buf_num=0;
+	mod[md].i=0;
+	mod[md].imin=0;
+	mod[md].imax=0;
+	mod[md].stop_f=0;
 	if(mod[md].ena) mod[md].ena(0);
 }
+
+void mod_test(uint8_t modx){
+	if(mod[modx].mod_tryb==tryb_off && mod[n].start_f==1){
+		t_start=1;
+		mod_id=n;
+		mod[n].mod_tryb=tryb_start;
+	}
+}
+void mod_det_event(void){
+	uint8_t t_start=0, mod_id=0;
+	for(uint8_t n=0; n<MOD_NUM; n++){	
+		if(mod[n].mod_tryb==tryb_off && mod[n].start_f==1 && mod[n].stop_f==0){
+			t_start=1;
+			mod[n].mod_tryb=tryb_start;
+		}
+		if(mod[n].mod_tryb>0 && mod[n].stop_f==1){
+			mod[n].stop_f=1;
+			mod[n].start_f=0;
+			mod[n].mod_tryb--;
+			t_stop++;
+		}
+	}
+	if(t_start) {
+		mod_det0_init();
+	}else{
+		
+	}
+}
+
 void mod_event(void){
-	static uint8_t init_f;
+	static uint8_t init_f,modx=1;
 	if(!init_f) {
 		mod_check();
 		mod_init();
 		init_f=1;
 	}
-	for(uint8_t n=0; n<MOD_NUM; n++){
-		if(mod[n].sw_f){
-			if(mod[n].mpk_f){
-				mod[n].i=adc_get();	
-			}
-		}
-	}	
+	// test
+		
 }
 
 void mod_set_nazwa(char * buf, uint8_t modx){
@@ -223,6 +271,21 @@ void mod_init(void){
 
 mod[0].adc_kanal=ADC0_KANAL;
 mod[1].adc_kanal=ADC1_KANAL;
+mod[0].nazwa[0]='K';
+mod[0].nazwa[1]='a';
+mod[0].nazwa[2]='n';
+mod[0].nazwa[3]='a';
+mod[0].nazwa[4]='l';
+mod[0].nazwa[5]='0';
+mod[0].nazwa[6]='\0';
+
+mod[1].nazwa[0]='K';
+mod[1].nazwa[1]='a';
+mod[1].nazwa[2]='n';
+mod[1].nazwa[3]='a';
+mod[1].nazwa[4]='l';
+mod[1].nazwa[5]='1';
+mod[1].nazwa[6]='\0';
 
 	#ifdef DET_INT_OFF
 		if(DET_INT_OFF==1) PORT( DET_INT_PORT ) |= (1<<DET_INT_PIN); else PORT( DET_INT_PORT ) |= (1<<DET_INT_PIN);

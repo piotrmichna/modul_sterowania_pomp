@@ -14,6 +14,10 @@
 #define NAZWA_NUM 15
 #define ADC_SAMPLE_NUM 5	// ilosc prubek do usrednienia max 31
 
+#define DET_INT_OFF 1
+#define DET_INT_PIN PD3
+#define DET_INT_PORT D
+
 // STEROWNIE KANA£ 0
 #define ADC0_KANAL 0		//nr kanalu ADC
 #define SW0_OFF 1		//detekcja obecnosci modulu sterujacego
@@ -73,6 +77,7 @@ typedef struct{
 	void (*mtk)(uint8_t);
 	void (*ena)(uint8_t);
 	uint8_t (*sw)(void);
+	uint8_t mod_tryb;
 	uint8_t mpk_f :1;
 	uint8_t mtk_f :1;
 	uint8_t sw_f :1;
@@ -83,7 +88,7 @@ typedef struct{
 	uint8_t det_f :1;
 	uint8_t start_f :1;
 	uint8_t stop_f :1;
-	uint8_t buf_id :0;
+	uint8_t buf_id :5;
 	uint8_t buf_num;
 	uint16_t i;
 	uint16_t imin;
@@ -91,10 +96,11 @@ typedef struct{
 }TMOD;
 
 TMOD mod[MOD_NUM];
+volatile uint8_t det_cnt;
 
 void mod_event(void);
 void mod_set_nazwa(char * buf, uint8_t modx);
-
-
+void mod_init(void);
+void mod_det0_init(void);
 
 #endif /* MOD_TPK_H_ */
