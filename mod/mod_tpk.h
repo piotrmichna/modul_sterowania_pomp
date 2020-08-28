@@ -18,7 +18,7 @@
 #define DET_INT_PIN PD3
 #define DET_INT_PORT D
 
-//#define PWR_OFF 0					// sterowanie zasilaniem modulow
+#define PWR_OFF 0					// sterowanie zasilaniem modulow
 #define PWR_CNT_DELAY 0x00001111	// maksymalny licznik zwloki dostepu do zasilacza
 #define PWR_PIN PC4
 #define PWR_PORT C
@@ -90,19 +90,19 @@ typedef struct{
 	uint8_t sw_f :1;
 	uint8_t ena_f :1;
 	uint8_t adc_kanal :4;
-	uint16_t buf[ADC_SAMPLE_NUM];
-	uint16_t adc_val;
+	uint16_t buf[ADC_SAMPLE_NUM];	
 	uint8_t det_f :1;
-	uint8_t start_f :1;
-	uint8_t stop_f :1;
-	uint8_t buf_id :5;
+	uint8_t buf_id :7;
 	uint8_t buf_num;
+	uint16_t adc_val;
 	uint16_t i;
 	uint16_t imin;
 	uint16_t imax;
 }TMOD;
 
 typedef struct{
+	uint8_t mod_num;
+	uint8_t mod_f;
 	uint8_t mod_on_f :1;
 	uint8_t init_f :1;
 #ifdef PWR_OFF
