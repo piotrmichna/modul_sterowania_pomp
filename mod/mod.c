@@ -14,4 +14,8 @@
 #include "mod_tpk.h"
 #include "adc_m328pb.h"
 
-
+int8_t set_mod_on(uint8_t xmod){
+	if(xmod<=mcnf.mod_num){
+		
+	}
+}

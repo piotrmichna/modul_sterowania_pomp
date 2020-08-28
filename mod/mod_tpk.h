@@ -116,8 +116,12 @@ TMOD mod[MOD_NUM];
 TMOD_CNF mcnf;
 volatile uint8_t det_int_f;
 
+uint8_t mod_get_num(void);
 int8_t mod_on(void);
 void mod_off(void);
+
+void mod_stop_adc(uint8_t md);
+void mod_get_adc(uint8_t md);
 
 int mod_set_mpk(uint8_t modx, uint8_t st);
 int mod_set_mtk(uint8_t modx, uint8_t st);
