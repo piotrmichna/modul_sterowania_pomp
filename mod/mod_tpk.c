@@ -191,55 +191,7 @@ void mod_stop_adc(uint8_t md){
 	if(mod[md].ena) mod[md].ena(0);
 }
 
-void mod_test(uint8_t modx){
-	if(mod[modx].mod_tryb==tryb_off && mod[n].start_f==1){
-		t_start=1;
-		mod_id=n;
-		mod[n].mod_tryb=tryb_start;
-	}
-}
-void mod_det_event(void){
-	uint8_t t_start=0, mod_id=0;
-	for(uint8_t n=0; n<MOD_NUM; n++){	
-		if(mod[n].mod_tryb==tryb_off && mod[n].start_f==1 && mod[n].stop_f==0){
-			t_start=1;
-			mod[n].mod_tryb=tryb_start;
-		}
-		if(mod[n].mod_tryb>0 && mod[n].stop_f==1){
-			mod[n].stop_f=1;
-			mod[n].start_f=0;
-			mod[n].mod_tryb--;
-			t_stop++;
-		}
-	}
-	if(t_start) {
-		mod_det0_init();
-	}else{
-		
-	}
-}
 
-void mod_event(void){
-	static uint8_t init_f,modx=1;
-	if(!init_f) {
-		mod_check();
-		mod_init();
-		init_f=1;
-	}
-	// test
-		
-}
-
-void mod_set_nazwa(char * buf, uint8_t modx){
-	char * c;
-	c = mod[modx].nazwa;
-	uint8_t n=0;
-	while(*buf!=0 && n<NAZWA_NUM){
-		*(c+n)=*buf;
-		n++;
-		buf++;
-	}
-}
 int mod_set_mpk(uint8_t modx, uint8_t st){
 	if(mod[modx].mpk_f!=st){
 		if(mod[modx].mpk){
