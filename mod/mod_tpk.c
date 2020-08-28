@@ -156,7 +156,7 @@ void mod_get_adc(uint8_t md){
 		// wylacz inne przerwania
 		mod[md].buf[ mod[md].buf_id ]=adc_get(md);	//wykonaj pomiar ADC dla przetwornika True RMS
 		
-		while(!adc_flag) asm volatile ("nop");	// oczekiwanie na zakonczenie konwersji
+		while(!adc_flag) {}	// oczekiwanie na zakonczenie konwersji
 		adc_flag=0;
 	#else
 		mod[md].buf[ mod[md].buf_id ]=adc_get(md);	//wykonaj pomiar ADC dla przetwornika True RMS
