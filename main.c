@@ -42,9 +42,8 @@ void main_init(void);
 int main(void)
 {
     main_init();
-	mod_init();
 	adc_init();
-	mod_det0_init();
+
 	if(mod[0].ena) mod[0].ena(1);
 	if(mod[0].mpk) mod[0].mpk(1);
 	if(mod[0].mtk) mod[0].mtk(0);
@@ -57,14 +56,12 @@ int main(void)
 	uart_puts("START\n\r");	
 	
 	//timer 1
-	TCCR1B |= (1<<WGM12); // tryb CTC
-	TCCR1B |= (1<<CS10) | (1<<CS12);
-	OCR1A= 1800;
+	
 	
 	uint8_t cnt=25,n=0,stan=0;
 	uint16_t pomiar=0;
 	char c;
-	
+	mod_on();
 
 
     while (1) 
@@ -99,7 +96,7 @@ int main(void)
 					pomiar=adc_get(0);
 					uart_clear();
 					uart_puts("\n\r int1=");
-					uart_putint(det_cnt,10);
+					uart_putint(det_int_f,10);
 					c=testAr[n];
 					uart_putc(' ');
 					uart_putc(c);
