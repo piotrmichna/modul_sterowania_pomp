@@ -70,8 +70,9 @@ int8_t mod_on(void){
 	if(!mcnf.init_f) mod_init();
 	mod_check();
 	for(uint8_t n=0; n<MOD_NUM; n++){
-		if(mod[n].sw_f) cnt=1;
+		if(mod[n].sw_f) cnt++;
 	}
+	mcnf.mod_num=cnt;
 	if(!cnt){
 		return F_BRAK_MOD;
 	}else{
