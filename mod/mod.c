@@ -9,3 +9,9 @@
 #include <avr/io.h>
 #include <stdlib.h>
 #include <util/atomic.h>
+
+#include "mod.h"
+#include "mod_tpk.h"
+#include "adc_m328pb.h"
+
+
