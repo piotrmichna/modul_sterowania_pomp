@@ -13,13 +13,20 @@
 #include "adc_m328pb.h"
 
 extern TMOD mod[MOD_NUM];
-extern volatile uint8_t det_cnt;
-uint8_t enum tryb {tryb_off, tryb_start, tryb_det, tryb_mtr, tryb_mpk, tryb_run};
+extern TMOD_CNF mcnf;
+
+extern volatile uint8_t det_int_f;
+enum tryb {tryb_off, tryb_start, tryb_det, tryb_mtr, tryb_mpk, tryb_run};
 
 void mod_check(void);
-int mod_set_mpk(uint8_t modx, uint8_t st);
-int mod_set_mtk(uint8_t modx, uint8_t st);
+void mod_init(void);
 
+
+#ifdef PWR_OFF
+void pwr_set(uint8_t st);
+int8_t pwr_on(void);
+void pwr_off(void);
+#endif
 
 #ifdef MPK0_OFF
 void mpk0_set(uint8_t st);
@@ -51,19 +58,94 @@ void ena1_set(uint8_t st);
 #ifdef DET1_OFF
 uint8_t det1_get(void);
 #endif
-void mod_det0_init(void){	
-	EIMSK |= (1<<INT1);
-	EICRA |= (1<<ISC11);	
-}
-void mod_det0_stop(void){
-	EIMSK &= ~(1<<INT1);
-	EICRA &= ~(1<<ISC11);
-	det_cnt=0;
-}
+
 
 ISR(INT1_vect){
-	if(!det_cnt) OCR1A= 1800;
-	if(det_cnt<10) det_cnt++;
+	OCR1A= 1800;
+	det_int_f=1;
+}
+
+int8_t mod_on(void){
+	static int8_t cnt;
+	if(!mcnf.init_f) mod_init();
+	mod_check();
+	for(uint8_t n=0; n<MOD_NUM; n++){
+		if(mod[n].sw_f) cnt=1;
+	}
+	if(!cnt){
+		return F_BRAK_MOD;
+	}else{
+		TCCR1B |= (1<<WGM12);				// tryb CTC
+		TCCR1B |= (1<<CS10) | (1<<CS12);	// prescaler 1024
+		OCR1A= 1800;						//przerwanie co 100ms
+		EIMSK |= (1<<INT1);
+		EICRA |= (1<<ISC11);
+		cnt=0;
+		
+		// test detekcji napiecia 230VAC
+		while(cnt<32){
+			if(TIFR1 & (1<<OCF1A)){
+				TIFR1 |= (1<<OCF1A);
+				if(!mcnf.det_f){	// jesli nie wykryto detekcji napiecia zasilania
+					if(det_int_f){
+						//wykryto
+						cnt=0;
+						det_int_f=0;
+						mcnf.det_f=1;
+#ifndef PWR_OFF
+						return 0;
+#endif
+					}else{
+						cnt++;
+						if(cnt==32) return F_BRAK_NAPIECIA;
+					}
+				}
+#ifdef PWR_OFF			
+				else{	// wlaczenie zasilania
+					if(cnt<mcnf.pwr_delay){	//proga wlaczenia zasilania
+						int8_t err;
+						err=pwr_on();
+						if(!err) {
+							cnt=0;
+							mcnf.mod_on_f=1;
+							return 0;
+						}else{
+							cnt++;
+						}						
+					}else{
+						return F_BLAD_PROGRAMU;
+					}
+				}
+#endif
+			}
+		}
+		return F_BLAD_PROGRAMU;
+	}		
+}
+
+void mod_off(void){
+	TCCR1B &= ~(1<<WGM12);				// tryb CTC
+	TCCR1B &= ~(1<<CS10) | (1<<CS12);	// prescaler 1024
+	EIMSK &= ~(1<<INT1);
+	EICRA &= ~(1<<ISC11);
+	OCR1A= 0;
+#ifdef PWR_OFF
+	pwr_off();
+#endif
+	mcnf.mod_on_f=0;
+}
+
+
+
+void mod_set_nazwa(char * buf, uint8_t modx){
+	char * c;
+	c = mod[modx].nazwa;
+	uint8_t n=0;
+	while(*buf!=0 && n<NAZWA_NUM){
+		*(c+n)=*buf;
+		n++;
+		buf++;
+	}
 }
 void mod_get_adc(uint8_t md){
 	if(mod[md].buf_num==0){				// jesli pierwszy pomiar wlacz przetwornik True RMS
