@@ -12,11 +12,17 @@
 
 #define MOD_NUM 2
 #define NAZWA_NUM 15
-#define ADC_SAMPLE_NUM 5	// ilosc prubek do usrednienia max 31
+#define ADC_SAMPLE_NUM 5			// ilosc prubek do usrednienia max 31
 
-#define DET_INT_OFF 1
+#define DET_INT_OFF 1				// detekcja przejscia prze zero fazy 230VAC
 #define DET_INT_PIN PD3
 #define DET_INT_PORT D
+
+//#define PWR_OFF 0					// sterowanie zasilaniem modulow
+#define PWR_CNT_DELAY 0x00001111	// maksymalny licznik zwloki dostepu do zasilacza
+#define PWR_PIN PC4
+#define PWR_PORT C
+
 
 // STEROWNIE KANA£ 0
 #define ADC0_KANAL 0		//nr kanalu ADC
@@ -70,6 +76,7 @@
 #define F_BRAK_ADC -2
 #define F_BRAK_NAPIECIA -3
 #define F_BRAK_DEF -4
+#define F_BLAD_PROGRAMU -5
 
 typedef struct{
 	char nazwa[NAZWA_NUM];
@@ -95,12 +102,26 @@ typedef struct{
 	uint16_t imax;
 }TMOD;
 
-TMOD mod[MOD_NUM];
-volatile uint8_t det_cnt;
+typedef struct{
+	uint8_t mod_on_f :1;
+	uint8_t init_f :1;
+#ifdef PWR_OFF
+		uint8_t pwr_f :1;	// PWR_CNT_DELAY 0x00001111
+		uint8_t pwr_delay :4;	// zwloka na dostep do zasilacza od uruchomienia
+#endif
+	uint8_t det_f :1;	// PWR_CNT_DELAY 0x00001111	
+}TMOD_CNF;
 
-void mod_event(void);
-void mod_set_nazwa(char * buf, uint8_t modx);
-void mod_init(void);
-void mod_det0_init(void);
+TMOD mod[MOD_NUM];
+TMOD_CNF mcnf;
+volatile uint8_t det_int_f;
+
+int8_t mod_on(void);
+void mod_off(void);
+
+int mod_set_mpk(uint8_t modx, uint8_t st);
+int mod_set_mtk(uint8_t modx, uint8_t st);
+
+
 
 #endif /* MOD_TPK_H_ */
