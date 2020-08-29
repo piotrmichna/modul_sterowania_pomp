@@ -23,6 +23,8 @@
 
 volatile uint8_t adc_run;
 void adc_stop(void){
+	ADMUX=0;
+	ADCSRA=0;
 	adc_run=0;
 }
 

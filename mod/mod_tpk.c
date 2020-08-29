@@ -180,11 +180,15 @@ void mod_get_adc(uint8_t md){
 }
 
 void mod_stop_adc(uint8_t md){
-	adc_stop();
+	uint8_t flag=0;
+	for(uint8_t n=0;n<MOD_NUM; n++){
+		flag++;
+	}
+	if(!flag) adc_stop();
 	mod[md].buf_id=0;
 	mod[md].buf_num=0;
 	mod[md].i=0;
-	mod[md].imin=0;
+	mod[md].imin=1024;
 	mod[md].imax=0;
 	if(mod[md].ena) mod[md].ena(0);
 }
@@ -303,6 +307,9 @@ void mod_init(void){
 
 mod[0].adc_kanal=ADC0_KANAL;
 mod[1].adc_kanal=ADC1_KANAL;
+mod[0].imin=1024;
+mod[1].imin=1024;
+
 mod[0].nazwa[0]='K';
 mod[0].nazwa[1]='a';
 mod[0].nazwa[2]='n';
