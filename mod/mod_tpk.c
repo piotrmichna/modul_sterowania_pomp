@@ -193,7 +193,7 @@ void mod_stop_adc(uint8_t md){
 }
 
 
-int mod_set_mpk(uint8_t modx, uint8_t st){
+int8_t mod_set_mpk(uint8_t modx, uint8_t st){
 	if(mod[modx].mpk_f!=st){
 		if(mod[modx].mpk){
 			mod[modx].mpk(st);
@@ -207,7 +207,7 @@ int mod_set_mpk(uint8_t modx, uint8_t st){
 	}
 }
 
-int mod_set_mtk(uint8_t modx, uint8_t st){
+int8_t mod_set_mtk(uint8_t modx, uint8_t st){
 	if(mod[modx].mtk_f!=st){
 		if(mod[modx].mtk){
 			mod[modx].mtk(st);
@@ -221,16 +221,16 @@ int mod_set_mtk(uint8_t modx, uint8_t st){
 	}
 }
 
-int mod_set_ena(uint8_t modx, uint8_t st){
+int8_t mod_set_ena(uint8_t modx, uint8_t st){
 	if(mod[modx].mtk_f!=st){
 		if(mod[modx].ena){
 			mod[modx].ena(st);
 			mod[modx].ena_f=st;
 			return st;
-			}else{
+		}else{
 			return F_BRAK_DEF;
 		}
-		}else{
+	}else{
 		return F_BRAK_DEF;
 	}
 }

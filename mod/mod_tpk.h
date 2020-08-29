@@ -124,8 +124,9 @@ void mod_off(void);
 void mod_stop_adc(uint8_t md);
 void mod_get_adc(uint8_t md);
 
-int mod_set_mpk(uint8_t modx, uint8_t st);
-int mod_set_mtk(uint8_t modx, uint8_t st);
+int8_t mod_set_mpk(uint8_t modx, uint8_t st);
+int8_t mod_set_mtk(uint8_t modx, uint8_t st);
+int8_t mod_set_ena(uint8_t modx, uint8_t st)
 
 
 
