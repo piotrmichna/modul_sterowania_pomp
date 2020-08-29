@@ -28,19 +28,16 @@ void adc_stop(void){
 	adc_run=0;
 }
 
-void adc_init(void){
-	ADMUX=ADC_REFS;					//wybranie napiecia odniesienia
-	ADCSRA=(1<<ADEN) | (1<<ADIE);	//wlaczenie przetwornika i zezwolenie naprzerwanie
-	ADCSRA |= ADC_PRESCALER;		//ustawienie preskalera
-	adc_run=1;
-}
 
 uint16_t adc_get(uint8_t modx){
-	ADMUX=ADC_REFS | modx;
-	ADCSRA=(1<<ADEN) | (1<<ADIE);	//wlaczenie przetwornika i zezwolenie naprzerwanie
-	ADCSRA |= ADC_PRESCALER;		//ustawienie preskalera
-	if(modx==1) DIDR0=(1<<ADC1D);
-	if(modx==0) DIDR0=(1<<ADC0D);
+	if(!ADMUX){
+		ADMUX=ADC_REFS | modx;
+		ADCSRA=(1<<ADEN) | (1<<ADIE);	//wlaczenie przetwornika i zezwolenie naprzerwanie
+		ADCSRA |= ADC_PRESCALER;		//ustawienie preskalera
+		if(modx==1) DIDR0=(1<<ADC1D);
+		if(modx==0) DIDR0=(1<<ADC0D);
+		adc_run=1;
+	}
 	#if ADC_SLEEP_MODE == 1
 		ADCSRA |= (1<<ADATE);
 		set_sleep_mode(SLEEP_MODE_ADC);    //Tryb noise canceller

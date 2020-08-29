@@ -23,8 +23,6 @@
 //#define ADC_PRESCALER 6		//64
 #define ADC_PRESCALER 7		//128
 
-
-void adc_init(void);
 uint16_t adc_get(uint8_t modx);
 void adc_stop(void);
 
