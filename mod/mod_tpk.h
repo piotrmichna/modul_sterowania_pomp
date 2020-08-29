@@ -107,6 +107,7 @@ typedef struct{
 	uint8_t mod_f;
 	uint8_t mod_on_f :1;
 	uint8_t init_f :1;
+	uint8_t adc_f :1;
 #ifdef PWR_OFF
 		uint8_t pwr_f :1;	// PWR_CNT_DELAY 0x00001111
 		uint8_t pwr_delay :4;	// zwloka na dostep do zasilacza od uruchomienia

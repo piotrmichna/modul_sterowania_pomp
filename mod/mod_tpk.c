@@ -180,11 +180,7 @@ void mod_get_adc(uint8_t md){
 }
 
 void mod_stop_adc(uint8_t md){
-	uint8_t flag=0;
-	for(uint8_t n=0;n<MOD_NUM; n++){
-		flag++;
-	}
-	if(!flag) adc_stop();
+	if(!mcnf.mod_f) adc_stop();
 	mod[md].buf_id=0;
 	mod[md].buf_num=0;
 	mod[md].i=0;

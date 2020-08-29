@@ -38,6 +38,7 @@ int8_t set_mod_on(uint8_t xmod){
 								if(ret) return ret;
 							}
 						}else{
+							mod_get_adc(xmod);
 							mcnf.mod_f |= (1<<xmod);
 						}
 					}
@@ -53,6 +54,7 @@ int8_t set_mod_on(uint8_t xmod){
 int8_t set_mod_off(uint8_t xmod){
 	uint8_t ret;
 	if(mcnf.mod_on_f){
+		
 		while(mcnf.mod_f & (1<<xmod)){
 			if( TIFR1 & (1<<OCF1A) ){
 				TIFR1 |= (1<<OCF1A);
@@ -70,7 +72,9 @@ int8_t set_mod_off(uint8_t xmod){
 								ret=mod_set_mtk(xmod,0);
 								if(ret)	return ret;
 							}else{
+								mod_stop_adc(xmod);
 								mcnf.mod_f &= ~(1<<xmod);
+								if(!mcnf.mod_f) mod_off();
 							}
 						}
 					}
