@@ -77,6 +77,7 @@
 #define F_BRAK_NAPIECIA -3
 #define F_BRAK_DEF -4
 #define F_BLAD_PROGRAMU -5
+#define F_MOD_GO_ON -6
 
 typedef struct{
 	char nazwa[NAZWA_NUM];

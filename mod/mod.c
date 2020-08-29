@@ -15,7 +15,23 @@
 #include "adc_m328pb.h"
 
 int8_t set_mod_on(uint8_t xmod){
+	uint8_t ret;
 	if(xmod<=mcnf.mod_num){
-		
+		if(!mcnf.mod_on_f) {
+			ret=mod_on();
+			if(ret) return ret;
+		}
+		while( !(mcnf.mod_f & (1<<xmod)) ){
+			if( TIFR1 & (1<<OCF1A) ){
+				TIFR1 |= (1<<OCF1A);
+				if(det_int_f){
+					det_int_f=0;
+					ret=mod_set_mtk(xmod,1);
+				}
+			}
+			
+			mcnf.mod_f |= (1<<xmod);
+			
+		}		
 	}
 }
