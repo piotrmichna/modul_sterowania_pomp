@@ -14,9 +14,8 @@
 #include <stdlib.h>
 
 #include "macr.h"
-#include "mod/mod_tpk.h"
+#include "mod/mod.h"
 #include "uart/uart328pb.h"
-#include "mod/adc_m328pb.h"
 
 // SYSTEMOWE
 
@@ -41,11 +40,6 @@ void main_init(void);
 
 int main(void){
     main_init();
-	adc_init();
-
-	if(mod[0].ena) mod[0].ena(1);
-	if(mod[0].mpk) mod[0].mpk(1);
-	if(mod[0].mtk) mod[0].mtk(0);
 	
 	USART_Init( __UBRR);
 
@@ -58,10 +52,9 @@ int main(void){
 	
 	
 	uint8_t cnt=25,n=0,stan=0;
-	uint16_t pomiar=0;
+	int8_t err=0;
+	int16_t pomiar=0;
 	char c;
-	mod_on();
-
 
     while (1){	
 		if(TIFR1 & (1<<OCF1A)){
@@ -69,47 +62,26 @@ int main(void){
 			if (cnt){
 				cnt--;
 			}else{
-				
-				#if ADC_SLEEP_MODE == 0
-					if(adc_flag==0)	{
-						pomiar=adc_get(0);
-						pomiar++;
+				uart_clear();						
+				c=testAr[n];
+				uart_putc(' ');
+				uart_putc(c);
+				uart_putc(' ');
+				uart_putint(pomiar,10);
+				n++;
+				if(n==8) {
+					n=0;
+					uart_puts("\n\r");
+					if(stan){
+						stan=0;
+						err=set_mod_on(0);
 					}else{
-						
-						c=testAr[n];
-						uart_putc(' ');
-						uart_putc(c);
-						uart_putc(' ');
-						uart_putint(adc_res,10);
-						n++;
-						if(n==8) {
-							n=0;
-							if(stan) stan=0; else stan=1;
-							if(mod[0].mpk) mod[0].mpk(stan);
-							if(mod[0].mtk) mod[0].mtk(stan);
-						}
-						adc_flag=0;
+						stan=1;
+						err=set_mod_on(0);
 					}
-				#else
-					pomiar=adc_get(0);
-					uart_clear();
-					uart_puts("\n\r int1=");
-					uart_putint(det_int_f,10);
-					c=testAr[n];
-					uart_putc(' ');
-					uart_putc(c);
-					uart_putc(' ');
-					uart_putint(pomiar,10);
-				
-					n++;
-					if(n==8) {
-						if(stan) stan=0; else stan=1;
-						if(mod[0].mpk) mod[0].mpk(stan);
-						if(mod[0].mtk) mod[0].mtk(stan);
-						n=0;
-					}
-				#endif
-			
+					uart_puts("ret=");
+					uart_putint(err,10);
+				}
 				cnt=10;
 			}
 			

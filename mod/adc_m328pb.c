@@ -28,7 +28,6 @@ void adc_stop(void){
 	adc_run=0;
 }
 
-
 uint16_t adc_get(uint8_t modx){
 	if(!ADMUX){
 		ADMUX=ADC_REFS | modx;
@@ -44,7 +43,7 @@ uint16_t adc_get(uint8_t modx){
 		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {sleep_enable();};     //Odblokuj mo¿liwoœæ wejœcia w tryb sleep
 		sleep_cpu();                       //WejdŸ w tryb uœpienia
 		sleep_disable();                   //Zablokuj mo¿liwoœæ wejœcia w tryb sleep
-		if(!adc_run) ADCSRA=0;
+		if(!adc_run) return 0;
 		return ADC;
 		
 	#else
