@@ -150,16 +150,13 @@ void mod_set_nazwa(char * buf, uint8_t modx){
 	}
 }
 void mod_get_adc(uint8_t md){
-	if(mod[md].buf_num==0){				// jesli pierwszy pomiar wlacz przetwornik True RMS
-		if(mod[md].ena) mod[md].ena(1);
-	}
-	
 	#if ADC_SLEEP_MODE == 0
 		// wylacz inne przerwania
 		mod[md].buf[ mod[md].buf_id ]=adc_get(md);	//wykonaj pomiar ADC dla przetwornika True RMS
 		
 		while(!adc_flag) {}	// oczekiwanie na zakonczenie konwersji
 		adc_flag=0;
+		mod[md].buf[ mod[md].buf_id ]=adc_res;
 	#else
 		mod[md].buf[ mod[md].buf_id ]=adc_get(md);	//wykonaj pomiar ADC dla przetwornika True RMS
 	#endif
