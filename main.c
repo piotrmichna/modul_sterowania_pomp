@@ -77,7 +77,7 @@ int main(void){
 						err=set_mod_on(0);
 					}else{
 						stan=1;
-						err=set_mod_on(0);
+						err=set_mod_off(0);
 					}
 					uart_puts("ret=");
 					uart_putint(err,10);
