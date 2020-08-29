@@ -61,7 +61,7 @@ uint8_t det1_get(void);
 
 
 ISR(INT1_vect){
-	OCR1A= 1800;
+	OCR1A= 360;
 	det_int_f=1;
 }
 
@@ -76,9 +76,7 @@ int8_t mod_on(void){
 	if(!cnt){
 		return F_BRAK_MOD;
 	}else{
-		TCCR1B |= (1<<WGM12);				// tryb CTC
-		TCCR1B |= (1<<CS10) | (1<<CS12);	// prescaler 1024
-		OCR1A= 1800;						//przerwanie co 100ms
+		OCR1A= 360;						//przerwanie co 20ms
 		EIMSK |= (1<<INT1);
 		EICRA |= (1<<ISC11);
 		cnt=0;
@@ -126,8 +124,7 @@ int8_t mod_on(void){
 }
 
 void mod_off(void){
-	TCCR1B &= ~(1<<WGM12);				// tryb CTC
-	TCCR1B &= ~(1<<CS10) | (1<<CS12);	// prescaler 1024
+	OCR1A= 1800;						//przerwanie co 100ms
 	EIMSK &= ~(1<<INT1);
 	EICRA &= ~(1<<ISC11);
 	OCR1A= 0;

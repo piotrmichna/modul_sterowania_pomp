@@ -49,9 +49,11 @@ int main(void){
 	uart_puts("START\n\r");	
 	
 	//timer 1
+	TCCR1B |= (1<<WGM12);				// tryb CTC
+	TCCR1B |= (1<<CS10) | (1<<CS12);	// prescaler 1024
+	OCR1A= 1800;						//przerwanie co 100ms
 	
-	
-	uint8_t cnt=25,n=0,stan=0;
+	uint8_t cnt=10,n=0,stan=0;
 	int8_t err=0;
 	int16_t pomiar=0;
 	char c;
@@ -68,19 +70,19 @@ int main(void){
 				uart_putc(c);
 				uart_putc(' ');
 				uart_putint(pomiar,10);
+				uart_puts("\n\r");
+				uart_puts("ret=");
+				uart_putint(err,10);
 				n++;
 				if(n==8) {
-					n=0;
-					uart_puts("\n\r");
+					n=0;					
 					if(stan){
 						stan=0;
 						err=set_mod_on(0);
 					}else{
 						stan=1;
 						err=set_mod_off(0);
-					}
-					uart_puts("ret=");
-					uart_putint(err,10);
+					}					
 				}
 				cnt=10;
 			}
