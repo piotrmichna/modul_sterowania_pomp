@@ -26,7 +26,21 @@ int8_t set_mod_on(uint8_t xmod){
 				TIFR1 |= (1<<OCF1A);
 				if(det_int_f){
 					det_int_f=0;
-					ret=mod_set_mtk(xmod,1);
+					if(!mod[xmod].mtk_f){
+						ret=mod_set_mtk(xmod,1);
+						if(ret)	return ret;
+					}else{
+						if(!mod[xmod].mpk_f){
+							ret=mod_set_mpk(xmod,1);
+							if(ret)	return ret;
+							if(!mod[xmod].ena_f){
+								ret=mod_set_ena(xmod,1);
+								if(ret) return ret;
+							}
+						}else{
+							mcnf.mod_f |= (1<<xmod);
+						}
+					}
 				}
 			}
 			
