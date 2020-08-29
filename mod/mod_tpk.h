@@ -78,6 +78,7 @@
 #define F_BRAK_DEF -4
 #define F_BLAD_PROGRAMU -5
 #define F_MOD_GO_ON -6
+#define F_EMPTY_COLL -7
 
 typedef struct{
 	char nazwa[NAZWA_NUM];
@@ -126,7 +127,7 @@ void mod_get_adc(uint8_t md);
 
 int8_t mod_set_mpk(uint8_t modx, uint8_t st);
 int8_t mod_set_mtk(uint8_t modx, uint8_t st);
-int8_t mod_set_ena(uint8_t modx, uint8_t st)
+int8_t mod_set_ena(uint8_t modx, uint8_t st);
 
 
 

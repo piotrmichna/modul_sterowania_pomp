@@ -94,7 +94,8 @@ int8_t mod_on(void){
 						det_int_f=0;
 						mcnf.det_f=1;
 #ifndef PWR_OFF
-						return 0;
+						mcnf.mod_on_f=1;
+						return F_OK;
 #endif
 					}else{
 						cnt++;
@@ -109,7 +110,7 @@ int8_t mod_on(void){
 						if(!err) {
 							cnt=0;
 							mcnf.mod_on_f=1;
-							return 0;
+							return F_OK;
 						}else{
 							cnt++;
 						}						
@@ -188,7 +189,6 @@ void mod_stop_adc(uint8_t md){
 	mod[md].i=0;
 	mod[md].imin=0;
 	mod[md].imax=0;
-	mod[md].stop_f=0;
 	if(mod[md].ena) mod[md].ena(0);
 }
 
@@ -198,7 +198,7 @@ int8_t mod_set_mpk(uint8_t modx, uint8_t st){
 		if(mod[modx].mpk){
 			mod[modx].mpk(st);
 			mod[modx].mpk_f=st;
-			return st;
+			return F_OK;
 		}else{
 			return F_BRAK_DEF;
 		}
@@ -212,7 +212,7 @@ int8_t mod_set_mtk(uint8_t modx, uint8_t st){
 		if(mod[modx].mtk){
 			mod[modx].mtk(st);
 			mod[modx].mtk_f=st;
-			return st;
+			return F_OK;
 			}else{
 			return F_BRAK_DEF;
 		}
@@ -226,7 +226,7 @@ int8_t mod_set_ena(uint8_t modx, uint8_t st){
 		if(mod[modx].ena){
 			mod[modx].ena(st);
 			mod[modx].ena_f=st;
-			return st;
+			return F_OK;
 		}else{
 			return F_BRAK_DEF;
 		}
