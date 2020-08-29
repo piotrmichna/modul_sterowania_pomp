@@ -39,8 +39,7 @@ char testAr[]={"|/-\\|/-\\"};
 
 void main_init(void);
 
-int main(void)
-{
+int main(void){
     main_init();
 	adc_init();
 
@@ -64,8 +63,7 @@ int main(void)
 	mod_on();
 
 
-    while (1) 
-    {	
+    while (1){	
 		if(TIFR1 & (1<<OCF1A)){
 			TIFR1 |= (1<<OCF1A);
 			if (cnt){
