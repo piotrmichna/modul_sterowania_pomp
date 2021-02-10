@@ -9,13 +9,13 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
+#include <util/atomic.h>
 #include <avr/pgmspace.h>
 #include <stdlib.h>
 
 #include "macr.h"
-#include "mod/mod_tpk.h"
+#include "mod/mod.h"
 #include "uart/uart328pb.h"
-#include "mod/adc_m328pb.h"
 
 // SYSTEMOWE
 
@@ -38,14 +38,8 @@ char testAr[]={"|/-\\|/-\\"};
 
 void main_init(void);
 
-int main(void)
-{
+int main(void){
     main_init();
-	mod_init();
-	adc_init();
-	if(mod[0].ena) mod[0].ena(1);
-	if(mod[0].mpk) mod[0].mpk(1);
-	if(mod[0].mtk) mod[0].mtk(0);
 	
 	USART_Init( __UBRR);
 
@@ -53,49 +47,64 @@ int main(void)
 	
 	uart_clear();
 	uart_puts("START\n\r");	
-
-	uint8_t cnt=25,n=0;
-	uint16_t pomiar=0;
-	char c;
 	
+	//timer 1
+	TCCR1B |= (1<<WGM12);				// tryb CTC
+	TCCR1B |= (1<<CS10) | (1<<CS12);	// prescaler 1024
+	OCR1A= 1800;						//przerwanie co 100ms
+	
+	uint8_t cnt=25,n=8,stanx=0;
+	int8_t err=0;
+	int16_t pomiar=0;
+	char c;
 
-
-    while (1) 
-    {	
-		#if ADC_SLEEP_MODE == 0
-			if(adc_flag==1){
-				uart_clear();
-				c=testAr[n];
-				uart_putc(' ');
-				uart_putc(c);
-				uart_putc(' ');
-				uart_putint(adc_res,10);
-				n++;
-				if(n==8) n=0;
-				adc_flag=0;
-			}
-		#endif
-		if (cnt){
-			cnt--;
-		}else{
-			#if ADC_SLEEP_MODE == 0
-				if(adc_flag==0)	pomiar=adc_get(0);
-				pomiar++;
-			#else
-				pomiar=adc_get(0);
-				uart_clear();
+    while (1){	
+		if(TIFR1 & (1<<OCF1A)){
+			TIFR1 |= (1<<OCF1A);
+			
+			if (cnt){
+				cnt--;
+				if(err){
+					if(stanx){
+						err=set_mod_on(0);						
+					}else{
+						err=set_mod_off(0);
+					}
+					uart_clear();
+					c=testAr[n];
+					uart_putc(' ');
+					uart_putc(c);
+					uart_putc(' ');
+					uart_putint(pomiar,10);
+					uart_puts("\n\r");
+					if(stanx) uart_puts(" on ret="); else uart_puts("off ret=");
+					uart_putint(err,10);
+				}
+			}else{				
+				uart_clear();						
 				c=testAr[n];
 				uart_putc(' ');
 				uart_putc(c);
 				uart_putc(' ');
 				uart_putint(pomiar,10);
+				uart_puts("\n\r");
+				if(stanx) uart_puts(" on ret="); else uart_puts("off ret=");
+				uart_putint(err,10);
 				n++;
-				if(n==8) n=0;
-			#endif
+				if(n==8) {
+					n=0;					
+					if(stanx){
+						stanx=0;
+						err=set_mod_on(0);						
+					}else{
+						stanx=1;
+						err=set_mod_off(0);
+					}					
+				}
+				cnt=25;
+			}
 			
-			cnt=25;
 		}
-		_delay_ms(10);
     }
 }
 

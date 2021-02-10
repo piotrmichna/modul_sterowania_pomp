@@ -12,7 +12,18 @@
 
 #define MOD_NUM 2
 #define NAZWA_NUM 15
-#define ADC_SAMPLE_NUM 5	// ilosc prubek do usrednienia max 63
+#define ADC_SAMPLE_NUM 5			// ilosc prubek do usrednienia max 31
+
+#define DET_INT_OFF 1				// detekcja przejscia prze zero fazy 230VAC
+#define DET_INT_PIN PD3
+#define DET_INT_PORT D
+
+#define PWR_OFF 0					// sterowanie zasilaniem modulow
+#define PWR_DELAY 10
+#define PWR_CNT_DELAY 0x00001111	// maksymalny licznik zwloki dostepu do zasilacza
+#define PWR_PIN PC4
+#define PWR_PORT C
+
 
 // STEROWNIE KANA£ 0
 #define ADC0_KANAL 0		//nr kanalu ADC
@@ -61,11 +72,15 @@
 #define RMS1_PORT C
 
 // KODY ZWRACANE Z FUNKCJI
+#define F_ON_PROGRES 1
 #define F_OK 0
 #define F_BRAK_MOD -1
 #define F_BRAK_ADC -2
 #define F_BRAK_NAPIECIA -3
 #define F_BRAK_DEF -4
+#define F_BLAD_PROGRAMU -5
+#define F_MOD_GO_ON -6
+#define F_EMPTY_COLL -7
 
 typedef struct{
 	char nazwa[NAZWA_NUM];
@@ -73,25 +88,50 @@ typedef struct{
 	void (*mtk)(uint8_t);
 	void (*ena)(uint8_t);
 	uint8_t (*sw)(void);
+	uint8_t mod_tryb;
 	uint8_t mpk_f :1;
 	uint8_t mtk_f :1;
 	uint8_t sw_f :1;
 	uint8_t ena_f :1;
 	uint8_t adc_kanal :4;
-	uint16_t buf[ADC_SAMPLE_NUM];
-	uint16_t adc_val;
-	uint8_t adc_flag :1;
-	uint8_t buf_id :0;
+	uint16_t buf[ADC_SAMPLE_NUM];	
+	uint8_t det_f :1;
+	uint8_t buf_id :7;
 	uint8_t buf_num;
+	uint16_t adc_val;
 	uint16_t i;
 	uint16_t imin;
 	uint16_t imax;
 }TMOD;
 
-TMOD mod[MOD_NUM];
+typedef struct{
+	uint8_t mod_num;
+	uint8_t mod_f;
+	uint8_t mod_on_f :1;
+	uint8_t init_f :1;
+	uint8_t adc_f :1;
+	uint8_t det_f :5;	// PWR_CNT_DELAY 0x00001111	
+#ifdef PWR_OFF
+		uint8_t pwr_f :1;	// PWR_CNT_DELAY 0x00001111
+		uint8_t pwr_delay :7;	// zwloka na dostep do zasilacza od uruchomienia
+#endif
+	
+}TMOD_CNF;
 
-void mod_init(void);
-void mod_set_nazwa(char * buf, uint8_t modx);
+TMOD mod[MOD_NUM];
+TMOD_CNF mcnf;
+volatile uint8_t det_int_f;
+
+uint8_t mod_get_num(void);
+int8_t mod_on(void);
+void mod_off(void);
+
+void mod_stop_adc(uint8_t md);
+void mod_get_adc(uint8_t md);
+
+int8_t mod_set_mpk(uint8_t modx, uint8_t st);
+int8_t mod_set_mtk(uint8_t modx, uint8_t st);
+int8_t mod_set_ena(uint8_t modx, uint8_t st);
 
 
 
