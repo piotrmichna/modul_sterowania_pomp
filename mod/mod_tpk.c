@@ -24,7 +24,7 @@ void mod_init(void);
 
 #ifdef PWR_OFF
 void pwr_set(uint8_t st);
-int8_t pwr_on(void);
+void pwr_on(void);
 void pwr_off(void);
 #endif
 
@@ -68,59 +68,58 @@ ISR(INT1_vect){
 int8_t mod_on(void){
 	static int8_t cnt;
 	if(!mcnf.init_f) mod_init();
-	mod_check();
-	for(uint8_t n=0; n<MOD_NUM; n++){
-		if(mod[n].sw_f) cnt++;
+	if(!mcnf.mod_num){
+		mod_check();
+		for(uint8_t n=0; n<MOD_NUM; n++){
+			if(mod[n].sw_f) mcnf.mod_num++;
+		}
 	}
-	mcnf.mod_num=cnt;
-	if(!cnt){
+	if(!mcnf.mod_num){
 		return F_BRAK_MOD;
 	}else{
-		OCR1A= 360;						//przerwanie co 20ms
-		EIMSK |= (1<<INT1);
-		EICRA |= (1<<ISC11);
-		cnt=0;
-		
-		// test detekcji napiecia 230VAC
-		while(cnt<32){
-			if(TIFR1 & (1<<OCF1A)){
-				TIFR1 |= (1<<OCF1A);
-				if(!mcnf.det_f){	// jesli nie wykryto detekcji napiecia zasilania
+		if(!mcnf.mod_on_f){
+			// odblokowanie przerwania INT1 detekcji napiecia
+			if(!cnt && !mcnf.det_f){
+				OCR1A= 360;						//przerwanie co 20ms
+				EIMSK |= (1<<INT1);
+				EICRA |= (1<<ISC11);
+				det_int_f=0;
+			}		
+			// test detekcji napiecia 230VAC
+			if(!mcnf.det_f){
+				if(cnt<32){
 					if(det_int_f){
-						//wykryto
-						cnt=0;
 						det_int_f=0;
 						mcnf.det_f=1;
-#ifndef PWR_OFF
-						mcnf.mod_on_f=1;
-						return F_OK;
-#endif
+						cnt=0;
 					}else{
 						cnt++;
-						if(cnt==32) return F_BRAK_NAPIECIA;
+						return F_ON_PROGRES;
 					}
+				}else{
+					cnt=0;
+					return F_BRAK_NAPIECIA;
 				}
-#ifdef PWR_OFF			
-				else{	// wlaczenie zasilania
-					if(cnt<mcnf.pwr_delay){	//proga wlaczenia zasilania
-						int8_t err;
-						err=pwr_on();
-						if(!err) {
-							cnt=0;
-							mcnf.mod_on_f=1;
-							return F_OK;
-						}else{
-							cnt++;
-						}						
-					}else{
-						return F_BLAD_PROGRAMU;
-					}
-				}
-#endif
 			}
+			// wlaczanie zasilania sekcji sterowania
+#ifdef PWR_OFF
+			if(cnt<mcnf.pwr_delay){
+				if(!cnt) pwr_on();
+				cnt++;
+				return F_ON_PROGRES;
+			}else{
+				cnt=0;
+				mcnf.mod_on_f=1;
+				return F_OK;
+			}
+#else
+			mcnf.mod_on_f=1;
+			return F_OK;
+#endif			
+		}else{
+			return F_EMPTY_COLL;
 		}
-		return F_BLAD_PROGRAMU;
-	}		
+	}			
 }
 
 void mod_off(void){
@@ -130,11 +129,20 @@ void mod_off(void){
 	OCR1A= 0;
 #ifdef PWR_OFF
 	pwr_off();
-#endif
 	mcnf.mod_on_f=0;
+#endif
 }
 
-
+#ifdef PWR_OFF
+void pwr_off(void){
+	if(PWR_OFF==1) PORT( PWR_PORT ) |= (1<<PWR_PIN); else PORT( PWR_PORT ) &= ~(1<<PWR_PIN);
+	mcnf.pwr_f=0;
+}
+void pwr_on(void){
+	if(PWR_OFF==0) PORT( PWR_PORT ) |= (1<<PWR_PIN); else PORT( PWR_PORT ) &= ~(1<<PWR_PIN);
+	mcnf.pwr_f=0;
+}
+#endif
 
 void mod_set_nazwa(char * buf, uint8_t modx){
 	char * c;
@@ -197,7 +205,7 @@ int8_t mod_set_mpk(uint8_t modx, uint8_t st){
 			return F_BRAK_DEF;
 		}
 	}else{
-		return F_BRAK_DEF;
+		return F_EMPTY_COLL;
 	}
 }
 
@@ -210,13 +218,13 @@ int8_t mod_set_mtk(uint8_t modx, uint8_t st){
 			}else{
 			return F_BRAK_DEF;
 		}
-		}else{
-		return F_BRAK_DEF;
+	}else{
+		return F_EMPTY_COLL;
 	}
 }
 
 int8_t mod_set_ena(uint8_t modx, uint8_t st){
-	if(mod[modx].mtk_f!=st){
+	if(mod[modx].ena_f!=st){
 		if(mod[modx].ena){
 			mod[modx].ena(st);
 			mod[modx].ena_f=st;
@@ -225,7 +233,7 @@ int8_t mod_set_ena(uint8_t modx, uint8_t st){
 			return F_BRAK_DEF;
 		}
 	}else{
-		return F_BRAK_DEF;
+		return F_EMPTY_COLL;
 	}
 }
 
@@ -324,6 +332,7 @@ mod[1].nazwa[6]='\0';
 		DDR( DET_INT_PORT ) &= ~(1<<DET_INT_PIN);
 	#endif
 	#ifdef PWR_OFF
+		mcnf.pwr_delay=PWR_DELAY;
 		if(PWR_OFF==1) PORT( PWR_PORT ) |= (1<<PWR_PIN); else PORT( PWR_PORT ) &= ~(1<<PWR_PIN);
 		DDR( PWR_PORT ) |= (1<<PWR_PIN);
 	#endif
@@ -380,36 +389,6 @@ mod[1].nazwa[6]='\0';
 	#endif
 	mcnf.init_f=1;
 }
-
-#ifdef PWR_OFF
-int8_t pwr_on(void){	
-	static uint8_t cnt;
-	if(!mcnf.pwr_f){
-		if(!cnt){
-			if (PWR_OFF==1) PORT( PWR_PORT ) &= ~(1<<PWR_PIN); else PORT( PWR_PORT ) |= (1<<PWR_PIN);
-			cnt++;
-			return 1;
-		}else{
-			if(cnt<mcnf.pwr_delay-1){
-				cnt++;
-				return 1;
-			}else{
-				cnt=0;
-				mcnf.pwr_f=1;
-				return 0;
-			}
-		}
-	}else{
-		return 0;
-	}
-}
-void pwr_off(void){
-	if(mcnf.pwr_f){
-		if (PWR_OFF==1) PORT( PWR_PORT ) &= ~(1<<PWR_PIN); else PORT( PWR_PORT ) |= (1<<PWR_PIN);
-		mcnf.pwr_f=0;
-	}
-}
-#endif
 
 #ifdef MPK0_OFF
 void mpk0_set(uint8_t st){

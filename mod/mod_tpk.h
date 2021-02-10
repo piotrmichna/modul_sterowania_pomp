@@ -19,6 +19,7 @@
 #define DET_INT_PORT D
 
 #define PWR_OFF 0					// sterowanie zasilaniem modulow
+#define PWR_DELAY 10
 #define PWR_CNT_DELAY 0x00001111	// maksymalny licznik zwloki dostepu do zasilacza
 #define PWR_PIN PC4
 #define PWR_PORT C
@@ -71,6 +72,7 @@
 #define RMS1_PORT C
 
 // KODY ZWRACANE Z FUNKCJI
+#define F_ON_PROGRES 1
 #define F_OK 0
 #define F_BRAK_MOD -1
 #define F_BRAK_ADC -2
@@ -108,11 +110,12 @@ typedef struct{
 	uint8_t mod_on_f :1;
 	uint8_t init_f :1;
 	uint8_t adc_f :1;
+	uint8_t det_f :5;	// PWR_CNT_DELAY 0x00001111	
 #ifdef PWR_OFF
 		uint8_t pwr_f :1;	// PWR_CNT_DELAY 0x00001111
-		uint8_t pwr_delay :4;	// zwloka na dostep do zasilacza od uruchomienia
+		uint8_t pwr_delay :7;	// zwloka na dostep do zasilacza od uruchomienia
 #endif
-	uint8_t det_f :1;	// PWR_CNT_DELAY 0x00001111	
+	
 }TMOD_CNF;
 
 TMOD mod[MOD_NUM];

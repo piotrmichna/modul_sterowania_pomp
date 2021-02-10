@@ -53,7 +53,7 @@ int main(void){
 	TCCR1B |= (1<<CS10) | (1<<CS12);	// prescaler 1024
 	OCR1A= 1800;						//przerwanie co 100ms
 	
-	uint8_t cnt=10,n=0,stan=0;
+	uint8_t cnt=25,n=8,stanx=0;
 	int8_t err=0;
 	int16_t pomiar=0;
 	char c;
@@ -61,9 +61,26 @@ int main(void){
     while (1){	
 		if(TIFR1 & (1<<OCF1A)){
 			TIFR1 |= (1<<OCF1A);
+			
 			if (cnt){
 				cnt--;
-			}else{
+				if(err){
+					if(stanx){
+						err=set_mod_on(0);						
+					}else{
+						err=set_mod_off(0);
+					}
+					uart_clear();
+					c=testAr[n];
+					uart_putc(' ');
+					uart_putc(c);
+					uart_putc(' ');
+					uart_putint(pomiar,10);
+					uart_puts("\n\r");
+					if(stanx) uart_puts(" on ret="); else uart_puts("off ret=");
+					uart_putint(err,10);
+				}
+			}else{				
 				uart_clear();						
 				c=testAr[n];
 				uart_putc(' ');
@@ -71,20 +88,20 @@ int main(void){
 				uart_putc(' ');
 				uart_putint(pomiar,10);
 				uart_puts("\n\r");
-				uart_puts("ret=");
+				if(stanx) uart_puts(" on ret="); else uart_puts("off ret=");
 				uart_putint(err,10);
 				n++;
 				if(n==8) {
 					n=0;					
-					if(stan){
-						stan=0;
-						err=set_mod_on(0);
+					if(stanx){
+						stanx=0;
+						err=set_mod_on(0);						
 					}else{
-						stan=1;
+						stanx=1;
 						err=set_mod_off(0);
 					}					
 				}
-				cnt=10;
+				cnt=25;
 			}
 			
 		}
